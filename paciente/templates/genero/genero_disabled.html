@@ -1,0 +1,73 @@
+
+    <div class="modal-dialog modal-dialog-centered ">
+        <div class="modal-content">
+
+            <form method="POST" class="form-group">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Deshabilitar</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Esta accion deshabilita el registro. Si quere borrar contactece con el Administrador:
+                        etriguero@gaakei.com</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" onclick="return cerrar_modal()">Cerrar</button>
+                    <button type="button" class="btn btn-danger" id="btn_delete" >Continuar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+<script>
+    $(document).ready(function () {
+
+        var token = $('input[name=csrfmiddlewaretoken]').val();
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                    xhr.setRequestHeader("X-CSRFToken", token);
+                }
+            }
+        });
+        $('#btn_delete').click(function (e) {
+            e.preventDefault();
+            // alert("provando");
+
+            var id = {{ obj.id }};
+
+        var template = "{% url 'paciente:genero_disabled' obj.id %}";
+        // template += id;
+        var data = { "id": id };
+        data = JSON.stringify(data);
+
+        $.ajax({
+            type: "POST",
+            url: template,
+            data: data,
+            beforeSend: function (xhr, settings) {
+                $.ajaxSettings.beforeSend(xhr, settings);
+            },
+            success: function (response) {
+                console.log(response);
+                cerrar_modal();
+                // alert(response);
+                var tipo = (response.startsWith('Registro no existe') ? 'red' : 'green');
+                mensaje(response, tipo);
+
+            },
+            error: function (jqXHR, textStatus, errorThrow) {
+                console.log(textStatus, errorThrow)
+                cerrar_modal();
+                mensaje(errorThrow, 'red');
+
+            }
+        })
+    })
+    });
+
+</script>
