@@ -6,7 +6,7 @@
     <!-- Default box -->
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Listado de Generos</h3>
+            <h3 class="card-title">Listado de Medicos</h3>
 
             <div class="card-tools">
                 <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip"
@@ -18,7 +18,7 @@
             </div>
             <div class="card-tools ml-2 mr-2 ">
 
-                <a href="{% url 'paciente:genero_new' %}" class="btn btn-success btn-sm"> Nuevo <i
+                <a href="{% url 'medico:medico_new' %}" class="btn btn-success btn-sm"> Nuevo <i
                         class="fas fa-plus-circle fa-lg"></i></a>
 
             </div>
@@ -34,10 +34,10 @@
                     <thead>
                         <tr>
                             <th scope="col">Nombres</th>
-                            <!-- <th scope="col">Apellidos</th>
-                            <th scope="col">Identificación</th>
+                            <th scope="col">Apellidos</th>
                             <th scope="col">Edad</th>
-                            <th scope="col">Tel Movil</th>-->
+                            <th scope="col">Tel Movil</th>
+                            <th scope="col">Especialidad</th>
                             <th scope="col">Estado</th>
                             <th class="all">Acciones</th>
                         </tr>
@@ -45,18 +45,18 @@
                     <tbody>
                         {% for item in obj %}
                         <tr>
-                            <td>{{ item.nombre }}</th>
-                                <!-- <td>{{ item.apellidos }}</td>
-                            <td>{{ item.documento_identificacion }}</td>
-                            <td>{{ item.fecha_nacimiento }}</td>
-                            <td>{{ item.celular }}</td> -->
+                            <td>{{ item.nombres }}</th>
+                            <td>{{ item.apellidos }}</td>
+                            <td>{{ item.edad }} Años</td>
+                            <td>{{ item.celular }}</td>
+                            <td>{{ item.especialidad }}</td>
                             <td>{{ item.estado }}</td>
                             <td>
-                                <a href="{% url 'paciente:genero_edit' item.id %}"
+                                <a href="{% url 'medico:medico_edit' item.id %}"
                                     class="btn btn-sm btn-outline-warning btn-circle" role="button"><i
                                         class="far fa-edit"></i></a>
                                 <button class="btn btn-sm btn-outline-danger btn-circle"
-                                    onclick="return abrir_modal('{% url 'paciente:genero_disabled' item.id %}')"><i
+                                    onclick="return abrir_modal('{% url 'medico:medico_disabled' item.id %}')"><i
                                         class="far fa-trash-alt"></i></button>
                             </td>
                         </tr>

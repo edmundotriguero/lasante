@@ -1,0 +1,87 @@
+{% extends 'bases/base.html' %}
+
+{% block page_content %}
+
+<section class="content">
+
+
+    <div class="container-fluid">
+
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-6">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                    <div class="card-header">
+                        {% if obj %}
+                        <h3 class="card-title">Edición  de registro</h3>
+                        {% else %}
+                        <h3 class="card-title">Nuevo registro</h3>
+                        {% endif %}
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form method="POST" >
+                        {% csrf_token %}
+                        <div class="card-body">
+                            <!-- <div class="form-group">
+                                <label for="exampleInputEmail1">Email address</label>
+                                <input type="email" class="form-control" id="exampleInputEmail1"
+                                    placeholder="Enter email">
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputPassword1">Password</label>
+                                <input type="password" class="form-control" id="exampleInputPassword1"
+                                    placeholder="Password"  >
+                            </div> -->
+                           
+                            {{ form.as_p }}
+                        </div>
+                        <!-- /.card-body -->
+
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block js_page %}
+<script>
+
+$(document).ready(function(){
+    $("input#id_fecha_nacimiento").focus(function(){
+        $(this).get(0).type = 'date';
+        $(this).val("{{obj.fecha_nacimiento|date:'yy-m-d'}}");
+        // alert()
+    });
+
+    // $("input#contrasena").click(function(){
+    //     $(this).val('');
+    //     $(this).get(0).type = 'password';
+    // });
+
+    // $("input#contrasena").focusout(function(){
+    //     var value = $(this).val();
+
+    //     if(value == '') {
+    //         $(this).get(0).type = 'text';
+    //         $(this).val($(this).attr('default'));
+    //     }
+
+    // });
+    
+    // $("#id_fecha_nacimiento").type = 'date';
+    // alert($("#id_fecha_nacimiento").val())
+});
+
+</script>
+
+
+{% endblock %}

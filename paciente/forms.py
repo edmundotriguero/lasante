@@ -1,8 +1,8 @@
 from django import forms
 
-from .models import Genero
+from .models import Genero, Ciudad, Tipo_documento
 
-# formulario para categorias
+# formulario para Genero
 class GeneroForm(forms.ModelForm):
     class Meta:
         model = Genero
@@ -15,3 +15,32 @@ class GeneroForm(forms.ModelForm):
         for field in iter(self.fields):
             self.fields[field].widget.attrs.update({'class':'form-control', 'autocomplete':'off'})
         # self.fields['estado'].widget.attrs.update({'class':'form-control custom-file-input'})
+
+
+# formulario para Ciudad
+class CiudadForm(forms.ModelForm):
+    class Meta:
+        model = Ciudad
+        fields = ['nombre','estado']
+        labels = {'nombre':'Nombre','estado':'Estado'}
+        widget = {'nombre': forms.TextInput, 'estado':forms.CheckboxInput}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in iter(self.fields):
+            self.fields[field].widget.attrs.update({'class':'form-control', 'autocomplete':'off'})
+        # self.fields['estado'].widget.attrs.update({'class':'form-control custom-file-input'})
+
+
+# formulario para Ciudad
+class DocumentoForm(forms.ModelForm):
+    class Meta:
+        model = Tipo_documento
+        fields = ['nombre','estado']
+        labels = {'nombre':'Nombre','estado':'Estado'}
+        widget = {'nombre': forms.TextInput, 'estado':forms.CheckboxInput}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in iter(self.fields):
+            self.fields[field].widget.attrs.update({'class':'form-control', 'autocomplete':'off'})
