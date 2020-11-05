@@ -1,0 +1,212 @@
+{% extends 'bases/base.html' %}
+
+{% block page_content %}
+
+<section class="content">
+
+
+    <div class="container-fluid">
+
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-6">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                    <div class="card-header">
+
+                        <h3 class="card-title">Datos de la Categoria</h3>
+
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+
+
+                    <div class="card-body">
+                        <div class="form-group">
+                            <input type="hidden" name="id_categoria" id="id_categoria" value="{{cat.id}}">
+                            <p>Nombre: {{cat.nombre }} </p>
+                            <p>Descripción: {{cat.descripcion }} </p>
+                            <p>Estado: {{cat.estado|yesno:'Activo, Deshabilitado' }} </p>
+                            <p>Sub Categorias: {{cat.subcategoria_estado|yesno:'Si, No' }} </p>
+
+                        </div>
+
+                    </div>
+                    <!-- /.card-body -->
+
+
+
+                </div>
+                <!-- /.card -->
+            </div>
+
+            <div class="col-md-6">
+                <!-- general form elements -->
+                <div class="card card-secondary">
+                    <div class="card-header">
+
+                        <h3 class="card-title">Formulario de Sub categorias</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form method="POST" id="formulario">
+                        {% csrf_token %}
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="id_nombre">Nombre Sub categoria:</label>
+                                <input type="text" class="form-control form-control-sm " id="id_nombre" name="nombre"
+                                    required value="">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_descripcion">Descripción:</label>
+                                <textarea class="form-control form-control-sm" id="id_descripcion" name="descripcion"
+                                    cols="40" rows="2"></textarea>
+                            </div>
+                            <div class="form-group ">
+                                <label for="id_estado">Estado: </label>
+                                <input type="checkbox" name="estado" id="id_estado" class=" m-1 " checked>
+                            </div>
+
+                        </div>
+                        <!-- /.card-body -->
+                        <!-- bandera que determina si es actualizacion de sub producto -->
+                        <input type="hidden" name="sub_categoria" id="id_subcategoria" value="">
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.card -->
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card">
+
+        <div class="row">
+
+
+            <div class="col-md-12">
+                <!-- general form elements -->
+                <div class="card-header">
+                    <h3 class="card-title">Listado de Sub categorias</h3>
+                </div>
+                <div class="card-body">
+                    {% if not obj %}
+                    <div class="alert alert-info">No hay registros que mostrar</div>
+                    {% else %}
+                    <div class="table-responsive-sm">
+
+                        <table class="table table-sm table-bordered table-hover table-striped" id="data-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Nombres</th>
+                                    <th scope="col">Descripción</th>
+
+                                    <th scope="col">Estado</th>
+
+                                    <th class="all">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in obj %}
+                                <tr>
+                                    <td>{{ item.nombre }}</th>
+                                    <td>{{ item.descripcion }}</td>
+                                    <td>{{ item.estado|yesno:'Activo, Deshabilitado' }}</td>
+
+
+                                    <td>
+                                        <!-- <a href="{% url 'historia:subcategoria_list' item.id %}"
+                                            class="btn btn-sm btn-outline-info btn-circle" role="button"><i
+                                                class="fas fa-subscript"></i></a>
+                                        <a href="{% url 'historia:categoria_edit' item.id %}"
+                                            class="btn btn-sm btn-outline-warning btn-circle" role="button"><i
+                                                class="far fa-edit"></i></a> -->
+                                        <button class="btn btn-sm btn-outline-warning btn-circle"
+                                            onclick="edit_subcategoria({{ item.id }})"><i
+                                                class="far fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger btn-circle"
+                                            onclick="return abrir_modal('{% url 'historia:categoria_disabled' item.id %}')"><i
+                                                class="far fa-trash-alt"></i></button>
+                                    </td>
+                                </tr>
+                                {% endfor%}
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% endif %}
+                    <!-- /.card -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block js_page %}
+<script>
+
+    $("form").submit(function (e) {
+
+        e.preventDefault();
+        var data = new FormData($("#formulario").get(0));
+        var id_categoria = $("#id_categoria").val();
+        var token = '{{csrf_token}}';
+
+        console.log(id_categoria);
+
+        $.ajax({
+            headers: { "X-CSRFToken": token },
+            type: "POST",
+            url: "/historia/sub_categoria/new/" + id_categoria,
+            data: data,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+
+                if (response == 'ok') {
+                    location.reload();
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrow) {
+                console.log(textStatus, errorThrow);
+                mensaje(errorThrow, 'red');
+                cerrar_modal();
+            }
+        });
+
+
+    });
+
+    function edit_subcategoria(id) {
+
+        var id_subcategoria = id;
+        var token = '{{csrf_token}}';
+        $.ajax({
+            headers: { "X-CSRFToken": token },
+            type: "GET",
+            url: "/historia/subcategoria_id/view/" + id_subcategoria,
+
+            success: function (response) {
+
+                // console.log(response.sub_product[0].state)
+                $("#id_subcategoria").val(response.sub_categoria[0].id)
+                $("#id_nombre").val(response.sub_categoria[0].nombre)
+                $("#id_descripcion").val(response.sub_categoria[0].descripcion)
+
+            },
+            error: function (jqXHR, textStatus, errorThrow) {
+                console.log(textStatus, errorThrow);
+                mensaje(errorThrow, 'red');
+                cerrar_modal();
+            }
+        });
+    }
+</script>
+{% endblock %}

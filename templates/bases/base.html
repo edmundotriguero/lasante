@@ -19,7 +19,8 @@
   <link rel="stylesheet" href="{% static 'base/css/lasante.css' %}">
   <!-- Jquery confir ventanas modales -->
   <link href="{% static 'base/plugins/jquery-confirm/jquery-confirm.min.css' %}" rel="stylesheet">
-
+  <!-- cdn para jquery data table -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
 </head>
 <!--
 `body` tag options:
@@ -277,6 +278,13 @@
                     <p>Medicos</p>
                   </a>
                 </li>
+
+                <li class="nav-item">
+                  <a href="{% url 'historia:categoria_list' %}" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Adm Categorias</p>
+                  </a>
+                </li>
                 
               </ul>
             </li>
@@ -383,7 +391,9 @@
   <script src="{% static 'base/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
   <!-- AdminLTE -->
   <script src="{% static 'base/js/adminlte.js' %}"></script>
-   <!-- jquery confirm  modales -->
+  <!-- cdn para jquery table -->
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+  <!-- jquery confirm  modales -->
 
    <script src="{% static 'base/plugins/jquery-confirm/jquery-confirm.min.js' %}"></script>
   {% block control_modal %}

@@ -1,0 +1,104 @@
+{% extends 'bases/base.html' %}
+
+{% block page_content %}
+<div class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Listado de Categorias</h3>
+
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip"
+                    title="Collapse">
+                    <i class="fas fa-minus"></i></button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove" data-toggle="tooltip"
+                    title="Remove">
+                    <i class="fas fa-times"></i></button>
+            </div>
+            <div class="card-tools ml-2 mr-2 ">
+
+                <a href="{% url 'historia:categoria_new' %}" class="btn btn-success btn-sm"> Nuevo <i
+                        class="fas fa-plus-circle fa-lg"></i></a>
+
+            </div>
+        </div>
+        <div class="card-body">
+
+            {% if not obj %}
+            <div class="alert alert-info">No hay registros que mostrar</div>
+            {% else %}
+            <div class="table-responsive-sm">
+
+                <table class="table table-sm table-bordered table-hover table-striped" id="data-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nombres</th>
+                            <!-- <th scope="col">Apellidos</th>
+                            <th scope="col">Identificación</th>
+                            <th scope="col">Edad</th>
+                            <th scope="col">Tel Movil</th>-->
+                            <th scope="col">Estado</th>
+                            <th scope="col">Sub categorias</th>
+                            <th class="all">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in obj %}
+                        <tr>
+                            <td>{{ item.nombre }}</th>
+                                <!-- <td>{{ item.apellidos }}</td>
+                            <td>{{ item.documento_identificacion }}</td>
+                            <td>{{ item.fecha_nacimiento }}</td>
+                            <td>{{ item.celular }}</td> -->
+
+                            <td>{{ item.estado|yesno:'Activo, Deshabilitado' }}</td>
+                            <td>
+                                {{ item.subcategoria_estado|yesno:'Si, No'}}
+                            </td>
+
+                            <td>
+                                {% if item.subcategoria_estado == True %}
+                                <a href="{% url 'historia:subcategoria_list' item.id %}"
+                                    class="btn btn-sm btn-outline-info btn-circle" role="button"><i
+                                        class="fas fa-subscript"></i></a>
+                                {%endif%}
+                                <a href="{% url 'historia:categoria_edit' item.id %}"
+                                    class="btn btn-sm btn-outline-warning btn-circle" role="button"><i
+                                        class="far fa-edit"></i></a>
+                                <button class="btn btn-sm btn-outline-danger btn-circle"
+                                    onclick="return abrir_modal('{% url 'historia:categoria_disabled' item.id %}')"><i
+                                        class="far fa-trash-alt"></i></button>
+                            </td>
+                        </tr>
+                        {% endfor%}
+
+                    </tbody>
+                </table>
+            </div>
+
+            {% endif %}
+
+        </div>
+        <!-- /.card-body -->
+        <!-- <div class="card-footer">
+            Footer
+        </div> -->
+        <!-- /.card-footer-->
+    </div>
+    <!-- /.card -->
+
+</div>
+
+
+
+{% endblock %}
+
+{% block js_page %}
+<script>
+
+    $(document).ready(function () {
+        $('#data-table').DataTable();
+    });
+</script>
+{% endblock %}

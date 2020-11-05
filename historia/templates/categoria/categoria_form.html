@@ -1,0 +1,66 @@
+{% extends 'bases/base.html' %}
+
+{% block page_content %}
+
+<section class="content">
+
+
+    <div class="container-fluid">
+
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-6">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                    <div class="card-header">
+                        {% if obj %}
+                        <h3 class="card-title">Edición de registro</h3>
+                        {% else %}
+                        <h3 class="card-title">Nuevo registro</h3>
+                        {% endif %}
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="id_nombre">Nombre:</label>
+                                <input type="text" class="form-control " id="id_nombre" name="nombre" required value="{% if obj %} {{obj.nombre}} {% endif %}">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_descripcion">Descripción:</label>
+                                <textarea class="form-control" id="id_descripcion" name="descripcion"
+                                    cols="40" rows="10">{% if obj %} {{obj.descripcion}} {% endif %}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="id_estado">Estado: </label>
+                                {{form.estado}}
+                            </div>
+                            <div class="form-group">
+                                <label for="id_sub_categoria">Sub categoria: </label>
+                                {{form.subcategoria_estado}}
+                            </div>
+
+
+
+
+                        </div>
+                        <!-- /.card-body -->
+
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block js_page %}
+
+{% endblock %}

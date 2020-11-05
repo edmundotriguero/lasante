@@ -22,7 +22,7 @@ urlpatterns = [
     path('paciente/',include(('paciente.urls','paciente'), namespace='paciente')),
     path('medico/',include(('medico.urls','medico'), namespace='medico')),
 
-
+    path('historia/',include(('historia.urls','historia'), namespace='historia')),
     path('admin/', admin.site.urls),
 
     
