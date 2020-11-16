@@ -15,3 +15,9 @@ class CategoriaForm(forms.ModelForm):
     #     for field in iter(self.fields):
     #         self.fields[field].widget.attrs.update({'class':'form-control', 'autocomplete':'off'})
         # self.fields['estado'].widget.attrs.update({'class':'form-control custom-file-input'})
+
+
+# class HistoriaForm(forms.ModelForm):
+#     class Meta:
+#         model = Historia
+#         fields = ['paciente']

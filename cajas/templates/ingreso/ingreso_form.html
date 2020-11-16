@@ -1,0 +1,115 @@
+{% extends 'bases/base.html' %}
+
+{% block page_content %}
+
+<section class="content ">
+
+
+    <div class="container-fluid">
+
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                    <div class="card-header text-center">
+
+                        <h3 class="card-title">Registro de pago.</h3>
+
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <div class="col-6">
+                                    <label for="medico">Paciente:</label>
+                                    <!-- <input class="form-control" type="text" name="paciente" id="paciente" value="{{paciente.nombres}} {{paciente.apellidos}}" readonly>
+                                    <input type="hidden" name="id_paciente" id="id_paciente" value="{{paciente.id}}"> -->
+                                    {{ form.paciente }}
+                                </div>
+                                <div class="col-6">
+                                    <label for="fecha_consulta" class="">Fecha actual:</label>
+                                    <!-- <input type="datetime" class="form-control  " id="fecha_consulta"
+                                        name="fecha_consulta" readonly> -->
+                                    {{form.fecha}}
+
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-6">
+                                    <label for="monto">Monto:</label>
+                                    <!-- <input class="form-control" type="number" name="monto" id="monto" step="0.01"> -->
+                                    {{ form.monto }}
+                                </div>
+                                <div class="col-6">
+                                    <label for="tipopago">Tipo de pago:</label>
+                                    <!-- <select class="form-control" name="tipopago" id="tipopago" required>
+                                        <option value="">Seleccione.</option>
+                                        {%for item in pago %}
+                                        <option value="{{item.id}}">{{item.nombre}}</option>
+                                        {% endfor  %}
+                                    </select> -->
+                                    {{form.tipo_pago}}
+                                </div>
+                                
+
+                            </div>
+                            
+                            <div class="form-group ">
+                                <label for="id_nombre">Descripcion:</label>
+                                <!-- <textarea class="form-control" name="descripcion" id="descripcion" cols="30"
+                                    rows=5></textarea> -->
+                                    {{ form.detalle}}
+                            </div>
+                            <div class="form-group ">
+                                <label for="id_nombre">Estado:</label>
+                                <!-- <textarea class="form-control" name="descripcion" id="descripcion" cols="30"
+                                    rows=5></textarea> -->
+                                    {{ form.estado}}
+                            </div>
+
+
+
+
+                        </div>
+                        <!-- /.card-body -->
+
+                        <div class="card-footer text-center">
+                            <button type="button" class="btn btn-danger" onclick="goBack()">Volver</button>
+                            <button type="submit" class="btn btn-success">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block js_page %}
+<script>
+    $(document).ready(function () {
+        $("#tipopago").select2({ placeholder: "Seleccione", allowClear: true, theme: "classic" });
+
+        var hoy = new Date();
+        var fecha = hoy.getDate() + '/' + (hoy.getMonth() + 1) + '/' + hoy.getFullYear();
+        
+        var datetime_insitu = fecha;
+        $('#fecha_consulta').val(datetime_insitu);
+    });
+
+    function goBack() {
+        window.history.back()
+    }
+
+    
+
+
+</script>
+{% endblock %}

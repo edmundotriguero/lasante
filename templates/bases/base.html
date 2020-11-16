@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AdminLTE 3 | Dashboard 3</title>
+  <title>La Sante | Administración</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet"
@@ -21,6 +21,8 @@
   <link href="{% static 'base/plugins/jquery-confirm/jquery-confirm.min.css' %}" rel="stylesheet">
   <!-- cdn para jquery data table -->
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+  <!-- select 2 para inputs select -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
 </head>
 <!--
 `body` tag options:
@@ -174,10 +176,10 @@
       <div class="sidebar">
         <!-- Sidebar user panel (optional) -->
         <!-- <div class="user-panel mt-3 pb-3 mb-3 d-flex"> -->
-          <!-- <div class="image">
+        <!-- <div class="image">
           <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
         </div> -->
-          <!-- <div class="info">
+        <!-- <div class="info">
             <a href="#" class="d-block">Alexander Pierce</a>
           </div> -->
         <!-- </div> -->
@@ -250,7 +252,7 @@
                 <li class="nav-item">
                   <a href="{% url 'paciente:genero_list' %}" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
-                    
+
                     <p>Genero</p>
                   </a>
                 </li>
@@ -260,10 +262,16 @@
                     <p>Ciudad</p>
                   </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item user-panel">
                   <a href="{% url 'paciente:documento_list' %}" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Tipos de Documentación</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="{% url 'medico:medico_list' %}" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Medicos</p>
                   </a>
                 </li>
                 <li class="nav-item">
@@ -272,10 +280,10 @@
                     <p>Especialización</p>
                   </a>
                 </li>
-                <li class="nav-item">
-                  <a href="{% url 'medico:medico_list' %}" class="nav-link">
+                <li class="nav-item user-panel">
+                  <a href="{% url 'medico:turno_list' %}" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
-                    <p>Medicos</p>
+                    <p>Turnos</p>
                   </a>
                 </li>
 
@@ -285,15 +293,22 @@
                     <p>Adm Categorias</p>
                   </a>
                 </li>
-                
+
+                <li class="nav-item user-panel">
+                  <a href="{% url 'cajas:tipopago_list' %}" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Tipo de pagos</p>
+                  </a>
+                </li>
+
               </ul>
             </li>
-            
-        
-           
-            
+
+
+
+
             <li class="nav-item">
-              <a href="pages/calendar.html" class="nav-link">
+              <a href="{% url 'paciente:paciente_list' %}" class="nav-link">
                 <i class="fas fa-users nav-icon"></i>
                 <p>
                   Pacientes
@@ -308,9 +323,26 @@
                   Caja
                 </p>
               </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="{% url 'cajas:ingreso_list' %}" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+
+                    <p>Ingresos</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="{% url 'cajas:egreso_list' %}" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Egresos</p>
+                  </a>
+                </li>
+                
+
+              </ul>
             </li>
-      
-           
+
+
             <li class="nav-header">Ayuda</li>
             <li class="nav-item">
               <a href="https://adminlte.io/docs/3.0/" class="nav-link">
@@ -318,14 +350,14 @@
                 <p>Documentación</p>
               </a>
             </li>
-      
+
             <li class="nav-item">
               <a href="#" class="nav-link">
                 <i class="fas fa-sign-out-alt mr-2 nav-icon"></i>
                 <p>Salir</p>
               </a>
             </li>
-            
+
           </ul>
         </nav>
         <!-- /.sidebar-menu -->
@@ -338,20 +370,20 @@
     <div class="content-wrapper">
       <!-- Content Header (Page header) -->
       <div class="content-header">
-      <!-- <div class="container-fluid"> -->
-      <!-- <div class="row mb-2"> -->
-      <!-- <div class="col-sm-6"> -->
-      <!-- <h1 class="m-0">Dashboard v3</h1> -->
-      <!-- </div>/.col -->
-      <!-- <div class="col-sm-6"> -->
-      <!-- <ol class="breadcrumb float-sm-right">
+        <!-- <div class="container-fluid"> -->
+        <!-- <div class="row mb-2"> -->
+        <!-- <div class="col-sm-6"> -->
+        <!-- <h1 class="m-0">Dashboard v3</h1> -->
+        <!-- </div>/.col -->
+        <!-- <div class="col-sm-6"> -->
+        <!-- <ol class="breadcrumb float-sm-right">
                 <li class="breadcrumb-item"><a href="#">Home</a></li>
                 <li class="breadcrumb-item active">Dashboard v3</li>
               </ol> -->
 
-      <!-- </div>/.col -->
-      <!-- </div>/.row -->
-      <!-- </div>/.container-fluid -->
+        <!-- </div>/.col -->
+        <!-- </div>/.row -->
+        <!-- </div>/.container-fluid -->
       </div>
       <!-- /.content-header -->
 
@@ -392,10 +424,16 @@
   <!-- AdminLTE -->
   <script src="{% static 'base/js/adminlte.js' %}"></script>
   <!-- cdn para jquery table -->
-  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+  <script type="text/javascript" charset="utf8"
+    src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+
   <!-- jquery confirm  modales -->
 
-   <script src="{% static 'base/plugins/jquery-confirm/jquery-confirm.min.js' %}"></script>
+  <script src="{% static 'base/plugins/jquery-confirm/jquery-confirm.min.js' %}"></script>
+
+  <!-- js para select 2  -->
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+
   {% block control_modal %}
   <script>
     function abrir_modal(url) {

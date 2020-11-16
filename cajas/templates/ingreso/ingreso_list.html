@@ -1,0 +1,156 @@
+{% extends 'bases/base.html' %}
+
+{% block page_content %}
+<div class="content">
+
+    <div class="row">
+
+        <!-- Default box -->
+        <div class="card col-12">
+            <div class="card-header">
+                <h3 class="card-title">Listado de Ingresos por pago de pacientes</h3>
+
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip"
+                        title="Collapse">
+                        <i class="fas fa-minus"></i></button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove" data-toggle="tooltip"
+                        title="Remove">
+                        <i class="fas fa-times"></i></button>
+                </div>
+                <div class="card-tools ml-2 mr-2  ">
+                    
+                    <button id="btnExportar" class="btn btn-sm btn-outline-info"> Exportar <i
+                            class="far fa-file-excel fa-lg"></i></button>
+
+                </div>
+            </div>
+            <div class="card-body">
+                <div class=" border-bottom mb-4 ">
+                    {% csrf_token %}
+                    <form action="GET">
+                        <!-- <div class="col-6"></div> -->
+                        <div class=" form-row align-items-rigth">
+                            <div class="col-4 my-1">
+
+                            </div>
+                            <div class="col-3 my-1">
+
+                                <input class="form-control form-control-sm datetimex" type="text" name="inicio"
+                                    id="inicio" placeholder="Fecha inicio" required>
+                            </div>
+                            <div class="col-3 my-1">
+
+                                <input class="form-control form-control-sm datetimex" type="text" name="final"
+                                    id="final" placeholder="Fecha final" required>
+                            </div>
+                            <div class="col-2 my-1">
+
+                                <button class="btn btn-outline-primary btn-sm " type="submit"> <i
+                                        class="fas fa-funnel-dollar fa-lg"></i> filtrar</button>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            <div class="card-body">
+
+                {% if not obj %}
+                <div class="alert alert-info">No hay registros que mostrar</div>
+                {% else %}
+                <div class="table-responsive">
+
+                    <table class="table table-sm table-bordered table-hover" id="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Fecha</th>
+                                <th scope="col">Paciente</th>
+
+                                <th scope="col">F. pago</th>
+                                <th scope="col">Ref</th>
+                                <th scope="col">Monto</th>
+
+                                <th scope="col">Estado</th>
+
+                                <th class="all excludeThisClass">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in obj %}
+                            <tr>
+                                <td>{{ item.fecha|date:'d/m/Y' }}</td>
+                                <td>{{ item.paciente.nombres }} {{ item.paciente.apellidos }}</th>
+
+                                <td>{{ item.tipo_pago }}</td>
+                                <td>{{ item.detalle }}</td>
+                                <td>{{ item.monto }}</td>
+                                <td>{{ item.estado|yesno:'Activo, Deshabilitado' }}</td>
+                                <td class="excludeThisClass">
+                                    
+                                    <a target="blank" href="{% url 'cajas:ingreso_print' item.id %}"
+                                        class="btn btn-sm btn-outline-info btn-circle" role="button"><i class="fas fa-print fa-lg"></i></a>
+                                    <a href="{% url 'cajas:ingreso_edit' item.id %}"
+                                        class="btn btn-sm btn-outline-warning btn-circle" role="button"><i
+                                            class="far fa-edit fa-lg"></i></a>
+                                    <button class="btn btn-sm btn-outline-danger btn-circle"
+                                        onclick="return abrir_modal('{% url 'cajas:ingreso_disabled' item.id %}')"><i
+                                            class="fas fa-ban fa-lg"></i></button>
+                                </td>
+                            </tr>
+                            {% endfor%}
+
+                        </tbody>
+                    </table>
+                </div>
+                <strong>Montos expresados en Pesos Bolivianos (Bs).</strong>
+
+                {% endif %}
+
+            </div>
+            <!-- /.card-body -->
+            <!-- <div class="card-footer">
+                Footer
+            </div> -->
+            <!-- /.card-footer-->
+        </div>
+        <!-- /.card -->
+
+    </div>
+
+
+</div>
+
+
+
+{% endblock %}
+
+{% block js_page %}
+<script>
+
+
+    var d = new Date();
+    var xls_name = 'reporte_egreso-' + d.toDateString() + '-.xls'
+    $(document).ready(function () {
+        $('#data-table').DataTable();
+        $(".datetimex").focus(function () {
+            $(this).attr({ type: 'date' });
+        });
+
+
+
+    });
+
+    $("#btnExportar").click(function () {
+        $("#table").table2excel({
+            // exclude CSS class
+            exclude: ".excludeThisClass",
+            name: "Worksheet Name",
+            filename: xls_name, //do not include extension
+            fileext: ".xls" // file extension
+        });
+    });
+   
+
+    
+</script>
+{% endblock %}

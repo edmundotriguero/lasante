@@ -1,0 +1,167 @@
+{% load static%}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <title>Orden: {{ obj.order.product}}</title>
+
+    <style type="text/css">
+        @page {
+            size: letter;
+            /* width: 139mm; */
+            /* height: 216mm; */
+            margin: 1cm;
+
+        }
+
+        @media print {
+            div.saltopagina {
+                display: block;
+                page-break-before: always;
+            }
+        }
+
+        body {
+            /* size: 216mm 279mm; */
+            height: 139mm;
+            width: 216mm;
+            max-height: 139mm;
+            max-width: 216mm;
+            border: solid 1px;
+            /* 216 x 279 */
+
+        }
+
+        .contenedor-logo {
+            text-align: center;
+        }
+
+
+        .logo {
+            margin-top: 10px;
+            max-width: 300px;
+            max-height: 90px;
+            width: 300px;
+            height: 90px;
+
+        }
+
+        .grafico {
+            /* width: 400px; */
+            /* max-width: auto; */
+            height: 345px;
+            min-height: 345px;
+        }
+
+        #footer {
+            position: fixed;
+            display: block;
+            /* top: 0; */
+            bottom: 0;
+        }
+        .firma {
+            border-top: solid 1px;
+            width: 60%;
+            margin: 50px auto;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <div class="container"> -->
+    <div class="col-12 row pr-0">
+        <div class="col-4 mr-3">
+            <img class="logo" src="{% static 'base/img/LaSante-logo.png' %}" alt="">
+
+        </div>
+        <div class="col-7 text-right mt-3" >
+            <h5> La Santé Clinica laser Bolivia</h5>
+            <h6 class="font-weight-bold"> N°: {{obj.id}}-{{year}}</h6>
+
+            <h6 class="font-weight-bold"> ORIGINAL</h6>
+            
+        </div>
+    </div>
+    <div class="text-center text-uppercase ">
+        <h3>RECIBO</h3>
+    </div>
+
+    <div class="col-12 text-uppercase mb-3 mt-3">
+        <div class="row ml-3">
+            <div class=" font-weight-bold mr-3">Fecha: </div>
+            <div class="desc"> {{ today|date:"d M Y" }} </div> 
+            
+        </div>
+        <div class="row ml-3">
+           
+            <div class=" font-weight-bold mr-3">Señor(a): </div>
+            <div class="desc"> {{obj.paciente}} </div>
+        </div>
+       
+    </div>
+
+    <div class="detalles col-12 mt-3">
+        <!-- <div class="row ml-5">
+            <div class=" font-weight-bold mr-3">Detalles:</div>
+
+        </div> -->
+
+
+    </div>
+    
+    <div class="col-12">
+        <table class="table table-bordered table-sm ">
+
+
+            <tbody>
+
+                <tr class="table-secondary" >
+                    <td>Detalle</td>
+                    <td>Sub total</td>
+                </tr>
+                <tr>
+                    <td>{{obj.detalle}}</td>
+                    <td>{{obj.monto}}  </td>
+                </tr>
+                <tr>
+                    <td>TOTAL:</td>
+                    <td class="table-info">{{obj.monto}}  </td>
+                </tr>
+               
+              
+            </tbody>
+        </table>
+    </div>
+    <div class="text-center col-12 row">
+        
+        <div class="col-6">
+            <p class="firma"> Entregué Conforme </p> 
+        </div> 
+        <div class="col-6">
+            <p class="firma"> Recibí Conforme </p> 
+        </div> 
+
+    </div>
+    
+
+
+   
+   
+
+
+   
+    <!-- <div id="footer">
+        Sistema de Administracion publicitaria - Rpk Srl.
+    </div> -->
+    <!-- </div> -->
+
+
+  
+</body>
+
+</html>

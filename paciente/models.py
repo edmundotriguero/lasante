@@ -2,6 +2,7 @@ from django.db import models
 
 # Create your models here.
 from bases.models import ClaseModelo
+from datetime import date
 
 class Genero(ClaseModelo):
     nombre = models.CharField(max_length=50, blank=False, null=False, unique=True)
@@ -46,6 +47,14 @@ class Paciente(ClaseModelo):
 
     def __str__(self):
         return '{} {}'.format(self.nombres, self.apellidos)
+
+    def edad(self):
+        today = date.today()
+        old = self.fecha_nacimiento
+        return today.year - old.year - ((today.month, today.day) < (old.month, old.day))
+
+    
+        
 
     def save(self):
         self.nombres = self.nombres.title()

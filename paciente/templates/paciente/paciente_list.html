@@ -1,0 +1,251 @@
+{% extends 'bases/base.html' %}
+
+{% block page_content %}
+<div class="content">
+
+    <div class="row">
+
+        <!-- Default box -->
+        <div class="card col-8">
+            <div class="card-header">
+                <h3 class="card-title">Listado de Pacientes</h3>
+
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip"
+                        title="Collapse">
+                        <i class="fas fa-minus"></i></button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove" data-toggle="tooltip"
+                        title="Remove">
+                        <i class="fas fa-times"></i></button>
+                </div>
+                <div class="card-tools ml-2 mr-2 ">
+
+                    <a href="{% url 'paciente:paciente_new' %}" class="btn btn-success btn-sm"> Nuevo <i
+                            class="fas fa-plus-circle fa-lg"></i></a>
+
+                </div>
+            </div>
+            <div class="card-body">
+
+                {% if not obj %}
+                <div class="alert alert-info">No hay registros que mostrar</div>
+                {% else %}
+                <div class="table-responsive">
+
+                    <table class="table table-sm table-bordered table-hover" id="data-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Nombres</th>
+                                
+                                <th scope="col">Edad</th>
+                                <th scope="col">Tel Movil</th>
+                                <th scope="col">Correo</th>
+                                <th scope="col">Genero</th>
+                                <th scope="col">Estado</th>
+                                <th scope="col">Cajas</th>
+                                <th scope="col">Historia</th>
+                                <th class="all">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in obj %}
+                            <tr>
+                                <td>{{ item.nombres }} {{ item.apellidos }}</th>
+                                
+                                <td>{{ item.edad }}</td>
+                                <td>{{ item.celular }}</td>
+                                <td>{{ item.correo }}</td>
+                                <td>
+                                    {{ item.genero}}
+                                </td>
+
+                                <td>{{ item.estado|yesno:'Activo, Deshabilitado' }}</td>
+                                <td>
+                                    <a class="btn btn-sm btn-outline-info btn-circle"
+                                        href="{% url 'cajas:ingreso_new' item.id %}"> $ <i class="fas fa-hand-holding-usd fa-lg"></i></a>
+                                    
+                                </td>
+                                <td>
+                                    <a class="btn btn-sm btn-outline-success btn-circle"
+                                        href="{% url 'historia:historia_new' item.id %}"><i
+                                            class="fas fa-file-medical-alt"></i> Add</a>
+                                    <button class="btn btn-sm btn-outline-info btn-circle"
+                                        onclick="return abrir_modal('{% url 'historia:historia_list' item.id %}')"><i
+                                            class="fas fa-file-medical-alt"></i> Ver</button>
+                                </td>
+                                <td>
+
+
+
+                                    <button class="btn btn-sm btn-outline-success btn-circle"
+                                        onclick="info({{item.id }})"><i class="fas fa-info"></i></button>
+                                    <a href="{% url 'paciente:paciente_edit' item.id %}"
+                                        class="btn btn-sm btn-outline-warning btn-circle" role="button"><i
+                                            class="far fa-edit"></i></a>
+                                    <button class="btn btn-sm btn-outline-danger btn-circle"
+                                        onclick="return abrir_modal('{% url 'paciente:paciente_disabled' item.id %}')"><i class="fas fa-users-slash"></i></button>
+                                </td>
+                            </tr>
+                            {% endfor%}
+
+                        </tbody>
+                    </table>
+                </div>
+
+                {% endif %}
+
+            </div>
+            <!-- /.card-body -->
+            <!-- <div class="card-footer">
+                Footer
+            </div> -->
+            <!-- /.card-footer-->
+        </div>
+        <!-- /.card -->
+        <div class="card col-4">
+            <div class="card-header">
+                <h3 class="card-title">Detalle de: {{paciente.nombre}}</h3>
+
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip"
+                        title="Collapse">
+                        <i class="fas fa-minus"></i></button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove" data-toggle="tooltip"
+                        title="Remove">
+                        <i class="fas fa-times"></i></button>
+                </div>
+
+            </div>
+            <div class="card-body">
+
+
+                <div id="no_info" class="alert alert-info">No hay registros que mostrar</div>
+                <div class="text-center" id="carga"><span class=""><i class="fas fa-spinner fa-2x rotated"></i></span>
+                </div>
+
+
+                <table class="table table-sm table-bordered " id="info">
+                    <thead>
+                        <tr>
+                            <td>Paciente</td>
+                            <td id="paciente"> ### </td>
+                        </tr>
+                        <tr>
+                            <td>Edad</td>
+                            <td id="edad"> ### </td>
+                        </tr>
+                        <tr>
+                            <td>Medico</td>
+                            <td id="medico"> ### </td>
+                        </tr>
+                        <tr>
+                            <td>Ultima visita:</td>
+                            <td id="ultima_session"> ### </td>
+
+                        </tr>
+                        <tr>
+                            <td>Tiempo desde la ultima visita</td>
+                            <td id="tiempo_pasado"> ### </td>
+                        </tr>
+                        <tr>
+                            <td>Proxima session programada</td>
+                            <td id="proxima_session"> ### </td>
+
+                        </tr>
+                        <tr>
+                            <td>Especialidad:</td>
+                            <td id="especialidad"> ### </td>
+                        </tr>
+                        <tr>
+                            <td>Cantidad de visitas:</td>
+                            <td id="visitas"> ### </td>
+                        </tr>
+
+                    </thead>
+                    <tbody>
+
+
+                    </tbody>
+                </table>
+
+
+
+            </div>
+
+        </div>
+        <!-- /.card -->
+    </div>
+
+
+</div>
+
+
+
+{% endblock %}
+
+{% block js_page %}
+<script>
+
+    $(document).ready(function () {
+        $('#data-table').DataTable();
+        $("#no_info").show()
+        $("#carga").hide()
+
+        $("#info").hide()
+
+    });
+    function info(id) {
+        $("#carga").show()
+
+
+        var data = {
+            id_paciente: id
+
+        };
+        // data = JSON.stringify(data);
+        var token = '{{csrf_token}}';
+        // alert(token);
+        // alert(id);
+        console.log(data);
+
+        $.ajax({
+            headers: { "X-CSRFToken": token },
+            type: "GET",
+            url: "/paciente/paciente/view_info",
+            data: data,
+            success: function (response) {
+                $("#carga").hide()
+                $("#no_info").hide()
+                $("#info").show()
+
+                // aux["order"][0].category
+
+                if (response['status'] == 'OK') {
+                    console.log(response['obj'])
+                    $("#paciente").text(response['obj']['paciente'])
+                    $("#edad").text(response['obj']['edad'] + " Años")
+                    $("#medico").text(response['obj']['medico'])
+                    $("#ultima_session").text(response['obj']['ultima_session'])
+                    $("#tiempo_pasado").text(response['obj']['tiempo_dif'])
+                    $("#proxima_session").text(response['obj']['proxima_session'])
+                    $("#especialidad").text(response['obj']['categoria'])
+                    $("#visitas").text(response['obj']['visitas'])
+
+
+
+
+                }
+
+                // aux = response;
+                // console.log(aux);
+            },
+            error: function (jqXHR, textStatus, errorThrow) {
+                console.log(textStatus, errorThrow);
+                mensaje(errorThrow, 'red');
+                cerrar_modal();
+            }
+        });
+
+    }
+</script>
+{% endblock %}

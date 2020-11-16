@@ -1,0 +1,202 @@
+{% extends 'bases/base.html' %}
+
+{% block page_content %}
+
+<section class="content ">
+
+
+    <div class="container-fluid">
+
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                    <div class="card-header">
+
+                        <h3 class="card-title">Registro de historia clinica</h3>
+
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <div class="col-6">
+                                    <label for="fecha_consulta" class="">Fecha actual:</label>
+                                    <input type="datetime" class="form-control  " id="fecha_consulta"
+                                        name="fecha_consulta" readonly>
+
+                                </div>
+                                <div class="col-6">
+                                    <label for="medico">Medico:</label>
+                                    <select class="form-control" name="medico" id="medico" required>
+                                        <option value="">Seleccione.</option>
+                                        {%for med in medico %}
+                                        <option value="{{med.id}}">{{med}}</option>
+                                        {%endfor  %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-6">
+                                    <label for="categoria">Especialidad:</label>
+                                    <select class="form-control" name="categoria" id="categoria" required>
+                                        <option value="">Seleccione.</option>
+                                        {%for item in cat %}
+                                        <option value="{{item.id}}">{{item.nombre}}</option>
+                                        {%endfor  %}
+                                    </select>
+                                </div>
+                                <div class="col-6">
+
+
+                                    <label for="id_nombre">Sub categoria: <span id="subcategoria_state"
+                                            class=" text-success"><i
+                                                class="fas fa-code-branch fa-lg fa-rotate-180 fa-flip-vertical"></i></span></label>
+                                    <select class="form-control" name="subcategoria" id="subcategoria">
+                                        <option value=""></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label for="id_nombre">Descripcion:</label>
+                                <textarea class="form-control" name="descripcion" id="descripcion" cols="30"
+                                    rows=5></textarea>
+
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-6">
+                                    <label for="id_nombre">Proxima session:</label>
+                                    <input type="checkbox" name="session" id="session">
+                                </div>
+                                <div class="col-6">
+
+
+                                    <label for="id_nombre">Fecha proxima cita:</label>
+                                    <input type="datetime-local" class="form-control " id="proxima" name="proxima">
+
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+                        <!-- /.card-body -->
+
+                        <div class="card-footer text-center">
+                            <button type="button" class="btn btn-danger" onclick="goBack()">Volver</button>
+                            <button type="submit" class="btn btn-success">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block js_page %}
+<script>
+    $(document).ready(function () {
+        $("#categoria").select2({ placeholder: "Seleccione", allowClear: true, theme: "classic" });
+        $("#subcategoria").select2({ placeholder: "Seleccione", allowClear: true, theme: "classic" });
+        $("#medico").select2({ placeholder: "Seleccione", allowClear: true, theme: "classic" });
+
+        $("input#id_fecha_nacimiento").focus(function () {
+            $(this).get(0).type = 'date';
+            $(this).val("{{obj.fecha_nacimiento|date:'yy-m-d'}}");
+            // alert()
+        });
+
+
+
+        $("#subcategoria").prop('disabled', true)
+        $("#subcategoria_state").hide()
+        $("#proxima").prop('disabled', true)
+
+
+        var hoy = new Date();
+        var fecha = hoy.getDate() + '/' + (hoy.getMonth() + 1) + '/' + hoy.getFullYear();
+        var hora = hoy.getHours() + ':' + hoy.getMinutes() + ':' + hoy.getSeconds();
+        var datetime_insitu = fecha + ' ' + hora;
+        $('#fecha_consulta').val(datetime_insitu);
+    });
+
+    function goBack() {
+        window.history.back()
+    }
+
+    $("#categoria").change(function () {
+        cat = $("#categoria").val()
+        subcategoria_select = $("#subcategoria")
+        subcategoria_state = $("#subcategoria_state")
+        var data = {
+            id_categoria: cat
+
+        };
+        // data = JSON.stringify(data);
+        var token = '{{csrf_token}}';
+        // alert(token);
+        // alert(id);
+        console.log(data);
+
+        $.ajax({
+            headers: { "X-CSRFToken": token },
+            type: "GET",
+            url: "/historia/categoria/view_instance",
+            data: data,
+            success: function (response) {
+                // aux["order"][0].category
+                if (response['obj'] == 'OK') {
+                    // mensaje("El producto asosiado a la orden de pauta de elimino. ", "orange");
+                    subcategoria_state.show()
+                    console.log(response["sub_categoria"])
+                    subcategoria_select.find('option').remove()
+                    subcategoria_select.append('<option value=""> Selecione</option>');
+                    for (let index = 0; index < response["sub_categoria"].length; index++) {
+                        subcategoria_select.append('<option value="' + response["sub_categoria"][index].id + '">' + response["sub_categoria"][index].nombre + '</option>');
+
+                    }
+                    subcategoria_select.prop('disabled', false)
+                }
+                if (response['obj'] == 'NOT') {
+                    subcategoria_state.hide()
+                    console.log("no tiene sub categoria")
+                    subcategoria_select.find('option').remove()
+                    subcategoria_select.prop('disabled', true)
+                }
+
+                aux = response;
+                console.log(aux);
+            },
+            error: function (jqXHR, textStatus, errorThrow) {
+                console.log(textStatus, errorThrow);
+                mensaje(errorThrow, 'red');
+                cerrar_modal();
+            }
+        });
+
+    });
+
+    $("#session").change(function () {
+        if ($("#session").is(':checked')) {
+            console.log("funciona")
+            $("#proxima").prop('disabled', false)
+            $("#proxima").prop('required', true)
+        } else {
+            $("#proxima").prop('disabled', true)
+            $("#proxima").prop('required', false)
+        }
+    })
+
+
+</script>
+{% endblock %}

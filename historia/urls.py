@@ -1,6 +1,8 @@
 from django.urls import path
 from .views import CategoriaView, CategoriaNew, CategoriaEdit, categoria_disabled, \
-                    subcategoria_list, sub_categoria_new, subcategoria_view_id, subcategoria_disabled
+                    subcategoria_list, sub_categoria_new, subcategoria_view_id, subcategoria_disabled, \
+                         historia_new, historia_list ,\
+                             categoria_view_instance
 
 
 urlpatterns = [
@@ -15,6 +17,13 @@ urlpatterns = [
     path('subcategoria/list/<int:id>', subcategoria_list, name='subcategoria_list'),
     path('subcategoria_id/view/<int:id>', subcategoria_view_id, name='subcategoria_id'),  #ajax
     path('sub_categoria/new/<int:id>', sub_categoria_new, name='subcategoria_new'),       #ajax
+    path('subcategoria/disabled/<int:id>', subcategoria_disabled, name='subcategoria_disabled'),
+
+
+    path('historia/new/<int:id>', historia_new, name='historia_new'),
+    path('historia/list/<int:id>', historia_list, name='historia_list'),
     
+    # ajax
+    path('categoria/view_instance', categoria_view_instance),
 
 ]

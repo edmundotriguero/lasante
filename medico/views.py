@@ -16,8 +16,8 @@ from django.contrib.auth.decorators import login_required, permission_required
 
 
 
-from .models import Especialidad, Medico
-from .forms import EspecialidadForm, MedicoForm
+from .models import Especialidad, Medico, Turno
+from .forms import EspecialidadForm, MedicoForm, TurnoForm
 
 
 #  Clases para Especialidad
@@ -61,6 +61,67 @@ def especialidad_disabled(request, id):
     template_name = 'especialidad/especialidad_disabled.html'
     contexto = {}
     obj = Especialidad.objects.filter(pk=id).first()
+
+    if not obj:
+        return HttpResponse('Registro no existe' + str(id))
+
+    if request.method == 'GET':
+        contexto = {'obj': obj}
+
+    if request.method == 'POST':
+        obj.estado = False
+        obj.save()
+        # mensaje par que la vista lo muestre sin coloca en comentarios pues al momento de los esta haciendo con ajax
+        # messages.success(request, 'Se inactivo correctamente')
+
+        contexto = {'obj': 'OK'}
+        return HttpResponse('Registro inactivo')
+
+    return render(request, template_name, contexto)
+
+
+
+#  Clases para Turno
+class TurnoView(LoginRequiredMixin, generic.ListView):
+    model = Turno
+    template_name = 'turno/turno_list.html'
+    context_object_name = 'obj'
+    login_url = 'bases:login'
+
+class TurnoNew(LoginRequiredMixin, generic.CreateView):
+    model = Turno
+    template_name = 'turno/turno_form.html'
+    context_object_name = 'obj'
+    form_class = TurnoForm  
+    success_url = reverse_lazy('medico:turno_list')
+    login_url = 'bases:login'
+
+    def form_valid(self, form):
+        form.instance.user_created = self.request.user
+
+        return super().form_valid(form)
+
+class TurnoEdit(SuccessMessageMixin, LoginRequiredMixin, generic.UpdateView):
+    model = Turno
+    template_name = 'turno/turno_form.html'
+    context_object_name = 'obj'
+    form_class = TurnoForm
+    success_url = reverse_lazy('medico:turno_list')
+    login_url = 'bases:login'
+    success_message = "Actializado satisfactoriamente"
+
+    def form_valid(self, form):
+        form.instance.user_updated = self.request.user.id
+
+        return super().form_valid(form)
+
+
+# @login_required(login_url='/login/')
+# @permission_required('paciente.delete_genero', login_url='bases:sin_privilegios')
+def turno_disabled(request, id):
+    template_name = 'turno/turno_disabled.html'
+    contexto = {}
+    obj = Turno.objects.filter(pk=id).first()
 
     if not obj:
         return HttpResponse('Registro no existe' + str(id))

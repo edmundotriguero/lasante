@@ -1,0 +1,128 @@
+<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+        <div class="modal-header text-center">
+            <div>
+
+                <h5 class="modal-title">Historia de: <span class="m-1 text-white bg-gradient-info">{{obj.nombres}}
+                        {{obj.apellidos}}</span></h5>
+            </div>
+
+
+
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="card-body">
+
+                <div class="">
+
+                    <table class="table table-sm table-bordered">
+
+                        <tr>
+                            <td>Paciente:</td>
+                            <td>{{obj.nombres}} {{obj.apellidos}}</td>
+                        </tr>
+                        <tr>
+                            <td>Edad:</td>
+                            <td>{{obj.edad}}</td>
+                        </tr>
+                        <tr>
+                            <td>Genero:</td>
+                            <td>{{obj.genero}}</td>
+                        </tr>
+
+                    </table>
+
+
+                </div>
+
+
+
+
+            </div>
+
+            {% for item in his %}
+            <!-- Default box -->
+            <div class="card col-12">
+                <div class="card-header">
+                    <h3 class="card-title">Fecha de visita: {{item.fecha_consulta}}</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip"
+                            title="Collapse">
+                            <i class="fas fa-minus"></i></button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove" data-toggle="tooltip"
+                            title="Remove">
+                            <i class="fas fa-times"></i></button>
+                    </div>
+
+                </div>
+                <div class="card-body">
+
+                    {% if not his %}
+                    <div class="alert alert-info">No hay registros que mostrar</div>
+                    {% else %}
+
+                    <table class="table table-sm table-bordered table-striped">
+                        <tr>
+                            <td>Medico que lo atendio:</td>
+                            <td>{{item.medico}}</td>
+                        </tr>
+                        <tr>
+                            <td>Especialidad:</td>
+                            <td>{{item.categoria}}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Sub categoria:
+                            </td>
+                            <td>
+                                {{item.sub_categoria}}
+                            </td>
+                        </tr>
+                        <tr {% if item.proxima_session %}   class="table-info" {% endif %}>
+                            <td>Proxima session:</td>
+                            {% if item.fecha_proxima %}
+                            <td>{{item.fecha_proxima}} </td>
+                            {% else%}
+                            <td>No registrado</td>
+
+                            {% endif %}
+                        </tr>
+                    </table>
+                    <p>descripción: </p>
+                    <p>{{item.descripcion}}</p>
+
+
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+            {% endfor %}
+
+        </div>
+        <div class="modal-footer ">
+            <div class="text-center col-12">
+
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+{% block js_page %}
+<script>
+
+    $(document).ready(function () {
+        $('#data-table').DataTable();
+    });
+</script>
+{% endblock %}

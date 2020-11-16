@@ -1,0 +1,123 @@
+{% extends 'bases/base.html' %}
+
+{% block page_content %}
+
+<section class="content">
+
+
+    <div class="container-fluid">
+
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-6">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                    <div class="card-header">
+                        {% if obj %}
+                        <h3 class="card-title">Edición de registro</h3>
+                        {% else %}
+                        <h3 class="card-title">Nuevo registro de Paciente</h3>
+                        {% endif %}
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="id_nombre">Nombres:</label>
+                                <!-- <input type="text" class="form-control " id="id_nombre" name="nombre" required value="{% if obj %} {{obj.nombre}} {% endif %}"> -->
+                                {{form.nombres}}
+                            </div>
+                            <div class="form-group">
+                                <label for="id_nombre">Apellidos:</label>
+                                <!-- <input type="text" class="form-control " id="id_nombre" name="nombre" required value="{% if obj %} {{obj.nombre}} {% endif %}"> -->
+                                {{form.apellidos}}
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-4" >
+                                    <label for="id_nombre">Tipo Doc:</label>
+                                    {{form.tipo_documento}}
+                                </div>
+                                <div class="col-8" >
+
+                                    
+                                    <label for="id_nombre">Num Documento:</label>
+                                    <!-- <input type="text" class="form-control " id="id_nombre" name="nombre" required value="{% if obj %} {{obj.nombre}} {% endif %}"> -->
+                                    {{form.documento_identificacion}}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-4" >
+                                    <label for="id_nombre">Fecha Nacimiento:</label>
+                                    {{form.fecha_nacimiento}}
+                                </div>
+                                <div class="col-4" >
+
+                                    
+                                    <label for="id_nombre">Genero:</label>
+                                    <!-- <input type="text" class="form-control " id="id_nombre" name="nombre" required value="{% if obj %} {{obj.nombre}} {% endif %}"> -->
+                                    {{form.genero}}
+                                </div>
+                                <div class="col-4" >
+
+                                    
+                                    <label for="id_nombre">Ciudad:</label>
+                                    <!-- <input type="text" class="form-control " id="id_nombre" name="nombre" required value="{% if obj %} {{obj.nombre}} {% endif %}"> -->
+                                    {{form.ciudad}}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-6" >
+                                    <label for="id_nombre">Num. Celular:</label>
+                                    {{form.celular}}
+                                </div>
+                                <div class="col-6" >
+
+                                    
+                                    <label for="id_nombre">Correo:</label>
+                                    <!-- <input type="text" class="form-control " id="id_nombre" name="nombre" required value="{% if obj %} {{obj.nombre}} {% endif %}"> -->
+                                    {{form.correo}}
+                                </div>
+                               
+                            </div>
+
+                            <div class="form-group">
+                                <label for="id_estado">Estado: </label>
+                                {{form.estado}}
+                            </div>
+                            
+                        </div>
+                        <!-- /.card-body -->
+
+                        <div class="card-footer text-center">
+                            <button type="button" class="btn btn-danger" onclick="goBack()">Volver</button>
+                            <button type="submit" class="btn btn-success">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block js_page %}
+<script>
+    $(document).ready(function(){
+    $("input#id_fecha_nacimiento").focus(function(){
+        $(this).get(0).type = 'date';
+        $(this).val("{{obj.fecha_nacimiento|date:'yy-m-d'}}");
+        // alert()
+    });
+
+    
+});
+
+    function goBack(){
+        window.history.back()
+    }
+</script>
+{% endblock %}
