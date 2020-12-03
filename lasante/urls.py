@@ -21,6 +21,7 @@ urlpatterns = [
     
     path('paciente/',include(('paciente.urls','paciente'), namespace='paciente')),
     path('medico/',include(('medico.urls','medico'), namespace='medico')),
+    path('enviarmail/',include(('enviarmail.urls','enviarmail'), namespace='enviarmail')),
 
     path('historia/',include(('historia.urls','historia'), namespace='historia')),
     path('cajas/',include(('cajas.urls','cajas'), namespace='cajas')),
