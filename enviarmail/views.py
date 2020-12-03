@@ -18,6 +18,9 @@ def reporte(request):
         settings.EMAIL_HOST_USER,
         ['etriguero@gaakei.com','edmundotriguero@gmail.com']
     )
+
     email.attach_alternative(content, 'text/html')
-    email.send()
+    
+    email.send(fail_silently=False)
+
     return render(request, 'email/saludo_mail.html')
