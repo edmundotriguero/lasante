@@ -21,10 +21,12 @@
                 </div>
                 <div class="card-tools ml-2 mr-2  ">
                     <a href="{% url 'cajas:egreso_new' %}" class="btn btn-success btn-sm"> Nuevo <i
-                            class="fas fa-plus-circle fa-lg"></i></a>
+                        class="fas fa-plus-circle fa-lg"></i></a>
+                    {% if perms.medico.delete_medico %}
                     <button id="btnExportar" class="btn btn-sm btn-outline-info"> Exportar <i
                             class="far fa-file-excel fa-lg"></i></button>
 
+                    {% endif %}
                 </div>
             </div>
             <div class="card-body">

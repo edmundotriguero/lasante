@@ -45,7 +45,7 @@
           <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-          <a href="index3.html" class="nav-link">Inicio</a>
+          <a href="{% url 'bases:home' %}" class="nav-link">Inicio</a>
         </li>
         <!-- <li class="nav-item d-none d-sm-inline-block">
           <a href="#" class="nav-link">Contact</a>
@@ -165,7 +165,7 @@
     <!-- Main Sidebar Container -->
     <aside class="main-sidebar elevation-4 sidebar-light-info">
       <!-- Brand Logo -->
-      <a href="#" class="brand-link">
+      <a href="{% url 'bases:home' %}" class="brand-link">
         <img src="{% static 'base/img/logo-laser.png' %}" alt="AdminLTE Logo" class="brand-image img-circle "
           style="opacity: .8">
         <span class="brand-text font-weight-bold ">LA SANTÉ</span>
@@ -244,7 +244,7 @@
 
 
 
-            <li class="nav-item">
+            <li class="nav-item user-panel">
               <a href="{% url 'paciente:paciente_list' %}" class="nav-link">
                 <i class="fas fa-users nav-icon"></i>
                 <p>
@@ -253,8 +253,25 @@
                 </p>
               </a>
             </li>
+
+            <li class="nav-header"><i class="fas fa-money-bill-wave "></i> Caja</li>
+
             <li class="nav-item">
-              <a href="pages/gallery.html" class="nav-link">
+              <a href="{% url 'cajas:ingreso_list' %}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+
+                <p>Ingresos</p>
+              </a>
+            </li>
+            <li class="nav-item user-panel">
+              <a href="{% url 'cajas:egreso_list' %}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Egresos</p>
+              </a>
+            </li>
+
+            <!-- <li class="nav-item menu-is-opening menu-open">
+              <a href="" class="nav-link" >
                 <i class="fas fa-money-bill-wave nav-icon"></i>
                 <p>
                   Caja
@@ -277,7 +294,8 @@
                 
 
               </ul>
-            </li>
+            </li> -->
+            {% if perms.paciente.admin_system %}
             <li class="nav-item">
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-hospital-user"></i>
@@ -342,6 +360,7 @@
 
               </ul>
             </li>
+            {% endif %}
 
 
             <li class="nav-header">Ayuda</li>

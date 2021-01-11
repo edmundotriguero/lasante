@@ -1,5 +1,5 @@
 {% extends 'bases/base.html' %}
-
+{% load static %}
 {% block page_content %}
 <div class="content">
 
@@ -18,12 +18,14 @@
                         title="Remove">
                         <i class="fas fa-times"></i></button>
                 </div>
+                {% if perms.medico.delete_medico %}
                 <div class="card-tools ml-2 mr-2  ">
-                    
+
                     <button id="btnExportar" class="btn btn-sm btn-outline-info"> Exportar <i
                             class="far fa-file-excel fa-lg"></i></button>
 
                 </div>
+                {% endif %}
             </div>
             <div class="card-body">
                 <div class=" border-bottom mb-4 ">
@@ -53,6 +55,7 @@
                         </div>
                     </form>
                 </div>
+            </div>
             <div class="card-body">
 
                 {% if not obj %}
@@ -86,9 +89,10 @@
                                 <td>{{ item.monto }}</td>
                                 <td>{{ item.estado|yesno:'Activo, Deshabilitado' }}</td>
                                 <td class="excludeThisClass">
-                                    
+
                                     <a target="blank" href="{% url 'cajas:ingreso_print' item.id %}"
-                                        class="btn btn-sm btn-outline-info btn-circle" role="button"><i class="fas fa-print fa-lg"></i></a>
+                                        class="btn btn-sm btn-outline-info btn-circle" role="button"><i
+                                            class="fas fa-print fa-lg"></i></a>
                                     <a href="{% url 'cajas:ingreso_edit' item.id %}"
                                         class="btn btn-sm btn-outline-warning btn-circle" role="button"><i
                                             class="far fa-edit fa-lg"></i></a>
@@ -125,11 +129,12 @@
 {% endblock %}
 
 {% block js_page %}
+<script src="{% static 'base/js/xls/jquery.table2excel.js' %}"></script>
 <script>
 
 
     var d = new Date();
-    var xls_name = 'reporte_egreso-' + d.toDateString() + '-.xls'
+    var xls_name = 'reporte_ingreso-' + d.toDateString() + '-.xls'
     $(document).ready(function () {
         $('#data-table').DataTable();
         $(".datetimex").focus(function () {
@@ -149,8 +154,8 @@
             fileext: ".xls" // file extension
         });
     });
-   
 
-    
+
+
 </script>
 {% endblock %}

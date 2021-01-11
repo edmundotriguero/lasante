@@ -61,4 +61,7 @@ class Paciente(ClaseModelo):
         self.apellidos = self.apellidos.title()
         super(Paciente, self).save()
 
+    class Meta:
+        permissions = [('admin_system', 'Permite la visualizacion de la parte administrativa en menu')]
+
     
