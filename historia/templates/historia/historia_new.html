@@ -70,15 +70,23 @@
                             </div>
 
                             <div class="form-group row">
-                                <div class="col-6">
+                                <div class="col-3">
                                     <label for="id_nombre">Proxima session:</label>
                                     <input type="checkbox" name="session" id="session">
                                 </div>
-                                <div class="col-6">
+                                <div class="col-5">
 
 
                                     <label for="id_nombre">Fecha proxima cita:</label>
-                                    <input type="datetime-local" class="form-control " id="proxima" name="proxima">
+                                    <input type="date" class="form-control " id="proxima" name="proxima">
+                                    
+
+                                </div>
+                                <div class="col-4">
+
+
+                                    <label for="id_nombre">Hora proxima cita:</label>
+                                    <input type="time" class="form-control " id="hora" name="hora">
 
                                 </div>
 
@@ -121,6 +129,7 @@
         $("#subcategoria").prop('disabled', true)
         $("#subcategoria_state").hide()
         $("#proxima").prop('disabled', true)
+        $("#hora").prop('disabled', true)
 
 
         var hoy = new Date();
@@ -191,9 +200,14 @@
             console.log("funciona")
             $("#proxima").prop('disabled', false)
             $("#proxima").prop('required', true)
+            $("#hora").prop('disabled', false)
+            $("#hora").prop('required', true)
+
         } else {
             $("#proxima").prop('disabled', true)
             $("#proxima").prop('required', false)
+            $("#hora").prop('disabled', true)
+            $("#hora").prop('required', false)
         }
     })
 

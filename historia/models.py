@@ -39,14 +39,16 @@ class Sub_categoria(ClaseModelo):
 #     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, unique=True)
 #     expediente = models.CharField(max_length=50, blank=False, null=False)
 
-
+# TODO: se esta aumentando el campo hora proxima debodo a que django me muestra una fecha en el back end y en la plantilla mee muestra otra fecha ya formateada 
+# TODO: Averiguar como se puede obtener esa fecha con otros formatos utc 
 class Historia(ClaseModelo):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
     sub_categoria = models.IntegerField(blank=True, null=True)
     proxima_session = models.BooleanField(default=True)
     descripcion = models.TextField(blank=True, null=True)
-    fecha_proxima = models.DateTimeField(blank=True, null=True)
+    fecha_proxima = models.DateField(blank=True, null=True)
+    hora_proxima = models.TimeField(blank=True, null=True)
     fecha_consulta = models.DateTimeField(blank=False, null=False)
     medico = models.ForeignKey(Medico, on_delete=models.CASCADE)
 

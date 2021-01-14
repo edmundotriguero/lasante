@@ -206,12 +206,14 @@ def historia_new(request, id):
         descripcion = request.POST.get('descripcion')
         fecha_consulta = request.POST.get('fecha_consulta')
         fecha_proxima_str = request.POST.get('proxima')
+        hora = request.POST.get('hora')
         medico = request.POST.get('medico')
-        date_format = "%Y-%m-%dT%H:%M"
+        date_format = "%Y-%m-%d"
         if fecha_proxima_str:
             fecha_proxima = datetime.strptime(str(fecha_proxima_str), date_format)
         else: 
             fecha_proxima = None
+
         fecha_consulta = datetime.strptime(fecha_consulta, "%d/%m/%Y %H:%M:%S")
         
         if proxima_session == 'on':
@@ -228,6 +230,7 @@ def historia_new(request, id):
             descripcion=descripcion,
             fecha_consulta=fecha_consulta,
             fecha_proxima=fecha_proxima,
+            hora_proxima=hora,
             estado=True,
             
             user_created=request.user
@@ -254,6 +257,7 @@ def historia_list(request, id):
         objeto["fecha_proxima"] = item.fecha_proxima
         objeto["descripcion"] = item.descripcion
         objeto["proxima_session"] = item.proxima_session
+        objeto["hora"] = item.hora_proxima
         objeto["categoria"] = item.categoria
         objeto["medico"] = item.medico
 

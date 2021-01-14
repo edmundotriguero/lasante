@@ -150,6 +150,7 @@
                         <tr>
                             <td>Proxima session programada</td>
                             <td id="proxima_session"> ### </td>
+                            <!-- <td id="proxima_hora"> ### </td> -->
 
                         </tr>
                         <tr>
@@ -227,7 +228,9 @@
                     $("#medico").text(response['obj']['medico'])
                     $("#ultima_session").text(response['obj']['ultima_session'])
                     $("#tiempo_pasado").text(response['obj']['tiempo_dif'])
-                    $("#proxima_session").text(response['obj']['proxima_session'])
+                    $("#proxima_session").text(response['obj']['proxima_session'] + '  ' + response['obj']['hora_proxima'] )
+                    // $("#proxima_hora").text()
+
                     $("#especialidad").text(response['obj']['categoria'])
                     $("#visitas").text(response['obj']['visitas'])
 

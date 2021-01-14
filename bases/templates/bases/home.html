@@ -3,6 +3,133 @@
 {% load static %}
 
 {% block page_content %}
+<div class="container-fluid">
+    <!-- Info boxes -->
+    <div class="row">
+        <div class="col-12 col-sm-6 col-md-6">
+            <div class="info-box mb-3">
+                <span class="info-box-icon bg-secondary elevation-1"><i class="fas fa-clock"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text"></span>
+                    <span class="info-box-number h4">{{fecha|date:' l d F \d\e Y'}}</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+    </div>
+    <div class="row">
+        <!-- /.col -->
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+                <span class="info-box-icon bg-info elevation-1"><i class="fas fa-users"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text text-center">Pacientes activos</span>
+                    <span class=" h4 info-box-number text-center">{{paciente}}</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box">
+                <span class="info-box-icon bg-success elevation-1"><i class="fas fa-notes-medical"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text text-center">Citas programadas HOY</span>
+                    <span class="info-box-number h4 text-center">
+                        {{citas}}
+                        <!-- <small>%</small> -->
+                    </span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+        <!-- <div class="col-12 col-sm-6 col-md-3">
+        <div class="info-box mb-3">
+            <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-thumbs-up"></i></span>
+
+            <div class="info-box-content">
+                <span class="info-box-text">Likes</span>
+                <span class="info-box-number">41,410</span>
+            </div>
+            
+        </div>
+      
+    </div> -->
+        <!-- /.col -->
+
+        <!-- fix for small devices only -->
+        <!-- <div class="clearfix hidden-md-up"></div> -->
+
+        <!-- <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+                <span class="info-box-icon bg-success elevation-1"><i class="fas fa-shopping-cart"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">Sales</span>
+                    <span class="info-box-number">760</span>
+                </div>
+
+            </div>
+
+        </div> -->
+
+    </div>
+    <!-- /.row -->
 
 
+    <!-- TABLE: LATEST ORDERS -->
+    <div class="card">
+        <div class="card-header border-transparent">
+            <h3 class="card-title">Latest Orders</h3>
+
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table m-0">
+                    <thead>
+                        <tr>
+                            <th>Paciente</th>
+                            <th>Num. tel</th>
+                            <!-- <th>Status</th> -->
+                            <th>Consulta</th>
+                            <th>Especialidad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in consultas %}
+                        <tr>
+                            <td>{{item.paciente}}</td>
+                            <td>{{item.paciente.celular}}</td>
+                            
+                            <td>{{item.fecha_proxima}} {{item.hora_proxima}}</td>
+                            <td>{{item.categoria}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.table-responsive -->
+        </div>
+        
+    </div>
+    <!-- /.card -->
+
+    
+</div>
 {% endblock %}

@@ -284,12 +284,13 @@ def paciente_info_view(request):
         obj_json["edad"] = str(paciente.edad())
         if historia:
             fecha_consulta =  historia.fecha_consulta.strftime("%d/%m/%Y %H:%M:%S")
-            fecha_proxima =  historia.fecha_proxima.strftime("%d/%m/%Y %H:%M:%S")
+            fecha_proxima =  historia.fecha_proxima.strftime("%d/%m/%Y")
             obj_json["ultima_session"] = str(fecha_consulta) 
             obj_json["medico"] = str(historia.medico)
             obj_json["tiempo_dif"] =  historia.tiempo_dif()
             obj_json["proxima"] = str(historia.proxima_session)
             obj_json["proxima_session"] = str(fecha_proxima)
+            obj_json["hora_proxima"] = str(historia.hora_proxima)
 
             obj_json["categoria"] = str(historia.categoria)
             obj_json["visitas"] = str(numero_historia)
