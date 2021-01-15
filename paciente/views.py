@@ -283,7 +283,9 @@ def paciente_info_view(request):
         obj_json["paciente"] = str(paciente)
         obj_json["edad"] = str(paciente.edad())
         if historia:
-            fecha_consulta =  historia.fecha_consulta.strftime("%d/%m/%Y %H:%M:%S")
+            fecha_consulta = historia.fecha_consulta
+            fecha_consulta = fecha_consulta - timedelta(hours=4)
+            fecha_consulta = fecha_consulta.strftime("%d/%m/%Y %H:%M")
             if historia.fecha_proxima: 
                 fecha_proxima =  historia.fecha_proxima.strftime("%d/%m/%Y")
             else:
