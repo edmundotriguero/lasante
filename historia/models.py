@@ -44,7 +44,7 @@ class Sub_categoria(ClaseModelo):
 class Historia(ClaseModelo):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
-    sub_categoria = models.IntegerField(blank=True, null=True)
+    sub_categoria = models.TextField(blank=True, null=True)
     proxima_session = models.BooleanField(default=True)
     descripcion = models.TextField(blank=True, null=True)
     fecha_proxima = models.DateField(blank=True, null=True)

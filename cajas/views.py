@@ -130,7 +130,7 @@ def ingreso_new(request, id):
         tipopago = request.POST.get('tipopago')
         
        
-        fecha = datetime.strptime(fecha, "%d/%m/%Y")
+        # fecha = datetime.strptime(fecha, "%d/%m/%Y")
         
         
 
@@ -196,10 +196,10 @@ def ingreso_print(request, id):
     contexto = {}
     obj = Ingresos.objects.get(pk=id)
     
-    today = datetime.today()
-    year = today.year
+    today = obj.fecha
+    year = obj.fecha.year
 
-
+    # print(year)
     if not obj:
         return HttpResponse('Registro no encontrado ' + str(id))
 
@@ -356,8 +356,8 @@ def egreso_print(request, id):
     contexto = {}
     obj = Egresos.objects.get(pk=id)
     
-    today = datetime.today()
-    year = today.year
+    today = obj.fecha
+    year = obj.fecha.year
 
 
     if not obj:

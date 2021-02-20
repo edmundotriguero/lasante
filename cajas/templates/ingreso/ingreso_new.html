@@ -31,7 +31,8 @@
                                 </div>
                                 <div class="col-6">
                                     <label for="fecha_consulta" class="">Fecha actual:</label>
-                                    <input type="datetime" class="form-control  " id="fecha_consulta"
+                                    <input type="checkbox" name="fecha_check" id="fecha_check">
+                                    <input type="date" class="form-control  " id="fecha_consulta"
                                         name="fecha_consulta" readonly>
 
                                 </div>
@@ -88,15 +89,37 @@
         $("#tipopago").select2({ placeholder: "Seleccione", allowClear: true, theme: "classic" });
 
         var hoy = new Date();
-        var fecha = hoy.getDate() + '/' + (hoy.getMonth() + 1) + '/' + hoy.getFullYear();
+        // var fecha = hoy.getDate() + '/' + (hoy.getMonth() + 1) + '/' + hoy.getFullYear(); // Fecha cambiada para que se pueda ingresar fecha personalizada
+        var fecha =  hoy.getFullYear() + '-' + ("0" + (hoy.getMonth() + 1)).slice(-2) + '-' + hoy.getDate();
+
        
-        var datetime_insitu = fecha;
+        var datetime_insitu = fecha.toString();
         $('#fecha_consulta').val(datetime_insitu);
     });
 
     function goBack() {
         window.history.back()
+
     }
+    
+    $("#fecha_check").change(function (){
+        if ($("#fecha_check").is(':checked')) {
+            // console.log("funciona")
+            $("#fecha_consulta").prop('readonly', false)
+            // $("#proxima").prop('required', true)
+            // $("#hora").prop('disabled', false)
+            // $("#hora").prop('required', true)
+
+        } else {
+            // $("#proxima").prop('disabled', true)
+            // $("#proxima").prop('required', false)
+            // $("#hora").prop('disabled', true)
+            // $("#hora").prop('required', false)
+            $("#fecha_consulta").prop('readonly', true)
+
+            // console.log("false")
+        }
+    });
 
     
 

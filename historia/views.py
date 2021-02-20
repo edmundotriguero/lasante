@@ -201,7 +201,7 @@ def historia_new(request, id):
 
     if request.method == 'POST':
         categoria = request.POST.get('categoria')
-        subcategoria = request.POST.get('subcategoria')
+        subcategoria = request.POST.getlist('subcategoria[]')
         proxima_session = request.POST.get('session')
         descripcion = request.POST.get('descripcion')
         fecha_consulta = request.POST.get('fecha_consulta')
@@ -220,7 +220,8 @@ def historia_new(request, id):
             session = True
         else:
             session = False
-
+        print("===========")
+        print(subcategoria)
         obj = Historia(
             paciente_id=id,
             categoria_id=categoria,
@@ -263,9 +264,29 @@ def historia_list(request, id):
 
         if item.sub_categoria:
             # print("tiene")
-            sub = Sub_categoria.objects.get(pk=item.sub_categoria)
+            # sub = Sub_categoria.objects.get(pk=item.sub_categoria)
             
-            objeto["sub_categoria"] = str(sub.nombre)
+            # objeto["sub_categoria"] = str(sub.nombre)
+            if '[' in  item.sub_categoria:
+
+                aux1 = item.sub_categoria[1 : -1]
+                lista_aux = aux1.split(',')
+                print("--------------")
+                esp = ''
+                for item2 in lista_aux:
+                    if item2:
+                        print(item2)
+                        item2 = item2.strip()
+                        sub = Sub_categoria.objects.get(pk=item2[1 : -1])
+                        esp = esp + str(sub.nombre) + ", "
+
+                    else: 
+                        esp = "No Registrado"   
+                objeto["sub_categoria"] = esp[0 : -2]
+            else:
+                sub = Sub_categoria.objects.get(pk=item.sub_categoria)
+            
+                objeto["sub_categoria"] = str(sub.nombre)
         else:
             # print('no')
             objeto["sub_categoria"] = 'No registrado'

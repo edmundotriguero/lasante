@@ -56,8 +56,8 @@
 
                                     <label for="id_nombre">Sub categoria: <span id="subcategoria_state"
                                             class=" text-success"><i
-                                                class="fas fa-code-branch fa-lg fa-rotate-180 fa-flip-vertical"></i></span></label>
-                                    <select class="form-control" name="subcategoria" id="subcategoria">
+                                                class="fas fa-code-branch fa-lg fa-rotate-180 fa-flip-vertical "></i></span></label>
+                                    <select class="form-control" name="subcategoria[]" id="subcategoria" multiple="multiple">
                                         <option value=""></option>
                                     </select>
                                 </div>
@@ -75,7 +75,7 @@
                                     <input type="checkbox" name="session" id="session">
                                 </div>
                                 <div class="col-5">
-
+ 
 
                                     <label for="id_nombre">Fecha proxima cita:</label>
                                     <input type="date" class="form-control " id="proxima" name="proxima">
