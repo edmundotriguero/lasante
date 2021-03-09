@@ -304,9 +304,9 @@ class EgresoNew(LoginRequiredMixin, generic.CreateView):
 
 
     def form_valid(self, form):
-        fecha = self.request.POST.get('fecha')
-        fecha = datetime.strptime(fecha, "%d/%m/%Y")
-        form.instance.fecha = fecha
+        # fecha = self.request.POST.get('fecha')
+        # fecha = datetime.strptime(fecha, "%d/%m/%Y")
+        # form.instance.fecha = fecha
         form.instance.user_created = self.request.user
 
         return super().form_valid(form)

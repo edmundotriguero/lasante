@@ -34,7 +34,8 @@
                                     <label for="fecha_consulta" class="">Fecha actual:</label>
                                     <!-- <input type="datetime" class="form-control  " id="fecha_consulta"
                                         name="fecha_consulta" readonly> -->
-                                    {{form.fecha}}
+                                        <input type="checkbox" name="fecha_check" id="fecha_check">
+                                        {{form.fecha}}
 
                                 </div>
                             </div>
@@ -94,13 +95,17 @@
 
 {% block js_page %}
 <script>
+    var hoy = new Date();
+    var fecha =  hoy.getFullYear() + '-' + ("0" + (hoy.getMonth() + 1)).slice(-2) + '-' + ("0" + (hoy.getDate())).slice(-2);
     $(document).ready(function () {
         $("#id_tipo_pago").select2({ placeholder: "Seleccione", allowClear: true, theme: "classic" });
 
-        var hoy = new Date();
-        var fecha = hoy.getDate() + '/' + (hoy.getMonth() + 1) + '/' + hoy.getFullYear();
         var datetime_insitu = fecha;
-        $('#id_fecha').val(datetime_insitu);
+        if(!'{{obj}}'){
+            $("#id_fecha").prop("type", "date")
+
+            $('#id_fecha').val(datetime_insitu);
+        } 
 
 
         $("#id_fecha").prop("readonly", true)
@@ -109,6 +114,22 @@
     function goBack() {
         window.history.back()
     }
+
+    $("#fecha_check").change(function (){
+        if ($("#fecha_check").is(':checked')) {
+            // console.log("funciona")
+            $("#id_fecha").prop('readonly', false)
+            $("#id_fecha").prop("type", "date")
+           
+
+        } else {
+            
+            $("#id_fecha").prop('readonly', true)
+            $("#id_fecha").val(fecha)
+
+            
+        }
+    });
 
     
 

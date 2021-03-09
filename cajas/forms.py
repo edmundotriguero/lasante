@@ -38,7 +38,7 @@ class EgresoForm(forms.ModelForm):
         model = Egresos
         fields = ['monto','detalle','fecha','num_factura' ,'estado', 'tipo_pago']
     
-        widget = {'nombre': forms.TextInput, 'estado':forms.CheckboxInput}
+        widget = {'nombre': forms.TextInput, 'estado':forms.CheckboxInput, 'fecha':forms.DateInput}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
