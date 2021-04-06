@@ -23,6 +23,8 @@ urlpatterns = [
     path('medico/',include(('medico.urls','medico'), namespace='medico')),
     path('enviarmail/',include(('enviarmail.urls','enviarmail'), namespace='enviarmail')),
 
+    path('inventario/',include(('inventario.urls','inventario'), namespace='inventario')),
+
     path('historia/',include(('historia.urls','historia'), namespace='historia')),
     path('cajas/',include(('cajas.urls','cajas'), namespace='cajas')),
     path('admin/', admin.site.urls),

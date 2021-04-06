@@ -1,0 +1,289 @@
+{% extends 'bases/base.html' %}
+
+{% block page_content %}
+
+<section class="content">
+
+
+    <div class="container-fluid">
+
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-4">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                    <div class="card-header">
+
+                        <h3 class="card-title">Datos de Grupo de unidades de medida</h3>
+
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+
+
+                    <div class="card-body">
+                        <div class="form-group">
+                            <input type="hidden" name="id_item" id="id_item" value="{{item.id}}">
+                            <p>Codigo: <strong>{{item.codigo }} </strong> </p>
+                            <p>Nombre: <strong>{{item.nombre }} {{item.marca}} </strong> </p>
+                            <p>Unidad de medida basica: <strong>{{item.unidad_medida_basica}} </strong> </p>
+                            <p>Detalle:<strong> {{item.descripcion }} </strong> </p>
+                            <p>Estado: <strong> {{item.estado|yesno:'Activo, Deshabilitado' }} </strong> </p>
+                            <p>Factor de conversión:<strong> {{item.factor_conversion|yesno:'Si, No' }}</strong> </p>
+
+                        </div>
+
+                    </div>
+                    <!-- /.card-body -->
+
+
+
+                </div>
+                <!-- /.card -->
+            </div>
+
+            <div class="col-md-8">
+                <!-- general form elements -->
+                <div class="card card-secondary">
+                    <div class="card-header">
+
+                        <h3 class="card-title">Formulario de Grupo de unidades de medida</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form method="POST" id="formulario">
+                        {% csrf_token %}
+                        <div class="card-body">
+                            <div class="row">
+
+
+                                <div class="form-group col-3">
+                                    <label for="id_um_origen">Cantidad:</label>
+                                    <input type="number" class="form-control form-control-sm " id="id_um_origen"
+                                        name="um_origen" required value="">
+                                </div>
+                                <div class="form-group col-2">
+                                    <label for="id_numerador_um" title="Unidad de medida basica">UM:</label>
+                                    <input type="text" class="form-control form-control-sm " id="id_numerador_um"
+                                        name="numerador_um" value="{{item.unidad_medida_basica}}" readonly>
+                                </div>
+                                <div class="form-group col-1">
+                                    <label for=""></label>
+                                    <h4> = </h4>
+
+                                </div>
+                                <div class="form-group col-3">
+                                    <label for="id_um_destino">Cantidad:</label>
+                                    <input type="number" class="form-control form-control-sm " id="id_um_destino"
+                                        name="um_destino" required value="">
+                                </div>
+                                <div class="form-group col-3">
+                                    <label for="id_unidad_medida">Unidad de medida:</label>
+                                    <select class="form-control" name="unidad_medida" id="unidad_medida">
+                                        <option value=""></option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+
+
+                            <div class="form-group ">
+                                <label for="id_estado">Estado: </label>
+                                <input type="checkbox" name="estado" id="id_estado" class=" m-1 " checked>
+                            </div>
+
+                        </div>
+                        <!-- /.card-body -->
+                        <!-- bandera que determina si es actualizacion de sub producto -->
+                        <input type="hidden" name="grupo_um" id="id_grupo_um" value="">
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.card -->
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card">
+
+        <div class="row">
+
+
+            <div class="col-md-12">
+                <!-- general form elements -->
+                <div class="card-header">
+                    <h3 class="card-title">Listado de factores de conversión</h3>
+                </div>
+                <div class="card-body">
+                    {% if not obj %}
+                    <div class="alert alert-info">No hay registros que mostrar</div>
+                    {% else %}
+                    <div class="table-responsive-sm">
+
+                        <table class="table table-sm table-bordered table-hover table-striped" id="data-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">UM Origen</th>
+                                    <th scope="col">=</th>
+                                    <th scope="col">UM Destino</th>
+
+                                    <th scope="col">Estado</th>
+
+                                    <th class="all">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in obj %}
+                                <tr>
+                                    <td>{{ item.um_origen }} </td>
+                                    <td> = </td>
+                                    <td>{{ item.um_equivalencia }}</td>
+                                    <td>{{ item.estado|yesno:'Activo, Deshabilitado' }}</td>
+
+
+                                    <td>
+                                        <!-- <a href="{% url 'historia:subcategoria_list' item.id %}"
+                                            class="btn btn-sm btn-outline-info btn-circle" role="button"><i
+                                                class="fas fa-subscript"></i></a>
+                                        <a href="{% url 'historia:categoria_edit' item.id %}"
+                                            class="btn btn-sm btn-outline-warning btn-circle" role="button"><i
+                                                class="far fa-edit"></i></a> -->
+                                        <button class="btn btn-sm btn-outline-warning btn-circle"
+                                            onclick="edit_grupo_um({{ item.id }})"><i
+                                                class="far fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger btn-circle"
+                                            onclick="return abrir_modal('{% url 'inventario:grupo_um_disabled' item.id %}')"><i
+                                                class="far fa-trash-alt"></i></button>
+                                    </td>
+                                </tr>
+                                {% endfor%}
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% endif %}
+                    <!-- /.card -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block js_page %}
+<script>
+    $(document).ready(function () {
+        $("#unidad_medida").select2({ placeholder: "Seleccione", allowClear: true, theme: "classic" });
+
+
+
+
+        // llenar todos unidad de medida 
+        
+        
+       um_equivalencia = $("#unidad_medida")
+        // data = JSON.stringify(data);
+        var token = '{{csrf_token}}';
+        // alert(token);
+        // alert(id);
+        // console.log(data);
+
+        $.ajax({
+            headers: { "X-CSRFToken": token },
+            type: "GET",
+            url: "/inventario/um/view_instance",
+            // data: data,
+            success: function (response) {
+                // aux["order"][0].category
+                if (response['obj'] == 'OK') {
+                    // mensaje("El producto asosiado a la orden de pauta de elimino. ", "orange");
+                    
+                    console.log(response["um"])
+                    um_equivalencia.find('option').remove()
+                    um_equivalencia.append('<option value=""> Seleccione</option>');
+                    for (let index = 0; index < response["um"].length; index++) {
+                        um_equivalencia.append('<option value="' + response["um"][index].id + '">' + response["um"][index].nombre + '</option>');
+
+                    }
+                    // subcategoria_select.prop('disabled', false)
+                }
+
+                aux = response;
+                console.log(aux);
+            },
+            error: function (jqXHR, textStatus, errorThrow) {
+                console.log(textStatus, errorThrow);
+                mensaje(errorThrow, 'red');
+                cerrar_modal();
+            }
+        });
+        // fin llenar unidades de medida
+    })
+
+    $("form").submit(function (e) {
+
+        e.preventDefault();
+        var data = new FormData($("#formulario").get(0));
+        var id_item = $("#id_item").val();
+        var token = '{{csrf_token}}';
+
+        console.log(id_item);
+
+        $.ajax({
+            headers: { "X-CSRFToken": token },
+            type: "POST",
+            url: "/inventario/grupo_um/new/" + id_item,
+            data: data,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+
+                if (response == 'ok') {
+                    location.reload();
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrow) {
+                console.log(textStatus, errorThrow);
+                mensaje(errorThrow, 'red');
+                cerrar_modal();
+            }
+        });
+
+
+    });
+
+    function edit_grupo_um(id) {
+
+        var id_grupo_um = id;
+        console.log(id_grupo_um)
+        var token = '{{csrf_token}}';
+        $.ajax({
+            headers: { "X-CSRFToken": token },
+            type: "GET",
+            url: "/inventario/grupo_um_id/view/" + id_grupo_um,
+
+            success: function (response) {
+                
+                console.log(response.sub_categoria[0])
+                $("#id_grupo_um").val(response.sub_categoria[0].id)
+                $("#id_um_origen").val(response.sub_categoria[0].um_origen)
+                $("#id_um_destino").val(response.sub_categoria[0].um_destino)
+                $("#unidad_medida").val(response.sub_categoria[0].unidad_medida)
+
+            },
+            error: function (jqXHR, textStatus, errorThrow) {
+                console.log(textStatus, errorThrow);
+                mensaje(errorThrow, 'red');
+                cerrar_modal();
+            }
+        });
+    }
+</script>
+{% endblock %}

@@ -362,6 +362,43 @@
             </li>
             {% endif %}
 
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-dolly-flatbed"></i>
+                <p>
+                  Inventario
+                  <i class="fas fa-angle-left right"></i>
+                  <!-- <span class="badge badge-info right">6</span> -->
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="{% url 'inventario:marca_list' %}" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+
+                    <p>Marca</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="{% url 'inventario:unidadmedida_list' %}" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+
+                    <p>Unidades de medida</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="{% url 'inventario:item_list' %}" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+
+                    <p>Item</p>
+                  </a>
+                </li>
+                
+               
+
+              </ul>
+            </li>
+
 
             <li class="nav-header">Ayuda</li>
             <!-- <li class="nav-item">
