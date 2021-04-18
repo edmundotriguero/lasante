@@ -31,3 +31,6 @@ class Egresos(ClaseModelo):
     fecha = models.DateField(blank=False, null=False)
     num_factura = models.CharField(max_length=100,  blank=False, null=False)
     tipo_pago = models.ForeignKey(Tipo_pago, on_delete=models.CASCADE)
+    detalle_state = models.BooleanField(blank=False)
+
+

@@ -14,6 +14,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 
 from paciente.models import Paciente
 from historia.models import Historia
+from inventario.models import Item
 
 import datetime
 import pytz
@@ -44,6 +45,17 @@ def home(request):
     consultas_hoy = Historia.objects.filter(fecha_proxima=fecha.date(), estado=True).all()
     citas_hoy = Historia.objects.filter(fecha_proxima=fecha.date(), estado=True).count()
 
+    items = Item.objects.filter(estado=True).all()
+    obj_item = []
+    for i in items:
+        if i.cantidad <= i.cantidad_minima:
+            objeto = {}
+            objeto['item'] = str(i.nombre) + ' ' + str(i.marca.nombre)
+            objeto['cantidad'] = i.cantidad
+            objeto['cantidad_minima'] = i.cantidad_minima
+            objeto['um'] = i.unidad_medida_basica.nombre
+            obj_item.append(objeto)
+
     # products = Product.objects.filter(state=True).all()
     # contracts_money = Contract.objects.filter(state=True, auspice=False).count()
     # contract_auspice = Contract.objects.filter(state=True, auspice=True).count()
@@ -59,7 +71,7 @@ def home(request):
 
    
 
-    contexto = {'paciente':paciente, 'fecha':fecha, 'citas':citas_hoy, 'consultas':consultas_hoy}
+    contexto = {'paciente':paciente, 'fecha':fecha, 'citas':citas_hoy, 'consultas':consultas_hoy, 'items':obj_item}
     return render(request, template_name, contexto)
 
 #  --  end method --  

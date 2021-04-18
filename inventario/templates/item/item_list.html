@@ -17,7 +17,8 @@
                     <i class="fas fa-times"></i></button>
             </div>
             <div class="card-tools ml-2 mr-2 ">
-
+                <a href="{% url 'inventario:ingreso_stock_list' %}" class="btn btn-info btn-sm"> Ingreso de stock <i class="fas fa-cubes"></i></a>
+                <a href="{% url 'inventario:salida_stock_list' %}" class="btn btn-warning btn-sm"> Salida de stock <i class="fas fa-cubes"></i></a>
                 <a href="{% url 'inventario:item_new' %}" class="btn btn-success btn-sm"> Nuevo <i
                         class="fas fa-plus-circle fa-lg"></i></a>
 
@@ -60,7 +61,8 @@
                             <td>
                                 {% if item.factor_conversion == True %}
                                 <a href="{% url 'inventario:grupo_um_list' item.id %}"
-                                    class="btn btn-sm btn-outline-info btn-circle" role="button" title="Grupo de unidades de medida"><i class="fa-lg fas fa-balance-scale"></i></a>
+                                    class="btn btn-sm btn-outline-info btn-circle" role="button"
+                                    title="Grupo de unidades de medida"><i class="fa-lg fas fa-balance-scale"></i></a>
                                 {%endif%}
                                 <a href="{% url 'inventario:item_edit' item.id %}"
                                     class="btn btn-sm btn-outline-warning btn-circle" role="button"><i

@@ -19,6 +19,7 @@ from .forms import CategoriaForm
 
 from paciente.models import Paciente
 from medico.models import Medico
+from inventario.models import Item, Grupo_um, Unidad_medida, Doc_salida, Consumo_inv
 
 
 # Clases para Categoria
@@ -191,13 +192,14 @@ def historia_new(request, id):
     obj = Paciente.objects.filter(pk=id).first()
     cat = Categoria.objects.filter(estado=True).all()
     medico = Medico.objects.filter(estado=True).all()
+    items = Item.objects.filter(estado=True).all()
 
 
     if not obj:
         return HttpResponse('Subcategoria not ' + str(id))
 
     if request.method == 'GET':
-        contexto = {'obj': obj, 'cat': cat, 'medico':medico}
+        contexto = {'obj': obj, 'cat': cat, 'medico':medico, 'items':items}
 
     if request.method == 'POST':
         categoria = request.POST.get('categoria')
@@ -209,6 +211,18 @@ def historia_new(request, id):
         hora = request.POST.get('hora')
         medico = request.POST.get('medico')
         date_format = "%Y-%m-%d"
+
+
+        iditem = request.POST.getlist('iditem[]')
+        idcantidad = request.POST.getlist('idcantidad[]') # total
+        idumb = request.POST.getlist('idumb[]')
+        multiplicador = request.POST.getlist('multiplicador[]')
+        idgrupo = request.POST.getlist('idgrupo[]')
+
+
+        # print(iditem)        
+        # print('dato id item')
+
         if fecha_proxima_str:
             fecha_proxima = datetime.strptime(str(fecha_proxima_str), date_format)
         else: 
@@ -220,7 +234,7 @@ def historia_new(request, id):
             session = True
         else:
             session = False
-        print("===========")
+        # print("===========")
         print(subcategoria)
         obj = Historia(
             paciente_id=id,
@@ -238,6 +252,39 @@ def historia_new(request, id):
 
         )
         obj.save()
+        print(len(idgrupo))
+        if idgrupo:
+            doc = Doc_salida (
+                fecha = fecha_consulta,
+                razon = 'tratamiento en visita medica',
+                historia_id= obj.id,
+                user_created= request.user
+            )
+            doc.save()
+            for i in range(int(len(idgrupo))):
+                a = Item.objects.get(pk=iditem[i])
+                u = Unidad_medida.objects.get(pk=idumb[i])
+                
+                inv = Consumo_inv(
+                    item=a,
+                    doc_salida=doc,
+                    cantidad_total=idcantidad[i],
+                    unidad_medida_t=u,
+                    grupo=idgrupo[i],
+                    multiplicador=multiplicador[i],
+                    user_created=request.user
+                )
+                inv.save()
+                a1 = a.cantidad
+                # print("cantidades para restar en stock")
+                # print(a1)
+                a2 = idcantidad[i]
+                # print(a2)
+                res = int(a1) - int(a2)
+                a.cantidad = res
+                a.user_updated = request.user.id
+                a.save()
+
         # return HttpResponse('Reegistro Inactivo !!!')
         return redirect("paciente:paciente_list")
 
@@ -252,6 +299,7 @@ def historia_list(request, id):
 
     new_obj = []
     for item in his:
+        item_list = []
         objeto = {}
         objeto["id"] = item.id
         objeto["fecha_consulta"] = item.fecha_consulta
@@ -291,7 +339,20 @@ def historia_list(request, id):
             # print('no')
             objeto["sub_categoria"] = 'No registrado'
 
-       
+        doc = Doc_salida.objects.filter(historia_id=item.id).first()
+        if doc:
+            inv = Consumo_inv.objects.filter(doc_salida=doc.id).all()
+            for j in inv:
+                aux2 = {}
+                aux2["item"] = str(j.item.nombre) + " " + str(j.cantidad_total) + " " + str(j.unidad_medida_t.nombre)
+                item_list.append(aux2)
+            objeto["item_list"] = item_list
+            objeto["item_state"] = True
+
+        else:
+            objeto["item_list"] = "Sin items utilizados"
+            objeto["item_state"] = False
+
 
         new_obj.append(objeto)
     if not obj:
@@ -330,6 +391,45 @@ def categoria_view_instance(request):
             aux = 'NOT'
 
         contexto = {'obj': aux, 'sub_categoria':query_json}
+        return HttpResponse(json.dumps(contexto), content_type=json)
+    
+    return HttpResponse({'obj': 'NONE'})
+
+
+
+# se usa por ajax: verifica si existe subcategorias de una categoria: retorna una cadena depende de cada uno.
+# para que pueda ser usado en la plantailla 
+def item_view_instance(request):
+    if request.method == 'GET':
+        id_item = request.GET.get('id_item')
+        # print(cat)
+        item = Item.objects.get(pk=id_item)
+        item_u = str(item.cantidad) + " " + str(item.unidad_medida_basica)
+        item_um = item.unidad_medida_basica.id
+        item_um_n = item.unidad_medida_basica.nombre
+        stock = item.cantidad
+        aux = ''
+        query_json = []
+        if item.factor_conversion == True:
+
+            query = Grupo_um.objects.filter(item_id=id_item, estado=True).all()
+            aux = 'OK'
+            query_json = []
+            for itemq in query:
+                um = Unidad_medida.objects.get(pk=itemq.unidad_medida)
+                objeto = {}
+                
+                objeto['id'] = itemq.id # id de grupo_um
+                objeto['id_um'] = itemq.unidad_medida 
+                objeto['unidad_medida'] = um.nombre
+                objeto['origen'] = itemq.um_origen
+
+                query_json.append(objeto)
+            
+        else:
+            aux = 'NOT'
+
+        contexto = {'obj': aux, 'sub_categoria':query_json, 'item':item_u, 'item_um':item_um, 'item_um_n':item_um_n, 'stock':stock}
         return HttpResponse(json.dumps(contexto), content_type=json)
     
     return HttpResponse({'obj': 'NONE'})

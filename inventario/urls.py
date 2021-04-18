@@ -2,7 +2,9 @@ from django.urls import path
 from .views import UnidadMedidaView, UnidadMedidaNew, UnidadMedidaEdit, unidadmedida_disabled,\
     MarcaView, MarcaNew, MarcaEdit, marca_disabled, \
     ItemView, ItemNew, ItemEdit, item_disabled, \
-    grupo_um_list, um_view_instance, grupo_um_new, grupo_um_view_id, grupo_um_disabled
+    grupo_um_list, um_view_instance, grupo_um_new, grupo_um_view_id, grupo_um_disabled, \
+    ingreso_stock_view, ingreso_stock_new, ingreso_stock_print, \
+    salida_stock_view, salida_stock_new, salida_stock_print
 
 
 urlpatterns = [
@@ -39,5 +41,21 @@ urlpatterns = [
 
     # ajax
     path('um/view_instance', um_view_instance),
+
+
+     # vistas para ingreso de stock
+    path('ingreso_stock/', ingreso_stock_view, name='ingreso_stock_list'),
+    path('ingreso_stock/GET', ingreso_stock_view, name='ingreso_stock_list'),
+    path('ingreso_stock/new', ingreso_stock_new, name='ingreso_stock_new'),
+    path('ingreso_stock/print/<int:id>', ingreso_stock_print, name='ingreso_stock_print'),
+
+    # vistas para salida de stock
+    path('salida_stock/', salida_stock_view, name='salida_stock_list'),
+    path('salida_stock/GET', salida_stock_view, name='salida_stock_list'),
+    path('salida_stock/new', salida_stock_new, name='salida_stock_new'),
+    path('salida_stock/print/<int:id>', salida_stock_print, name='salida_stock_print'),
+
+
+
 
 ]

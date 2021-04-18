@@ -64,6 +64,7 @@
             /* top: 0; */
             bottom: 0;
         }
+
         .firma {
             border-top: solid 1px;
             width: 60%;
@@ -79,30 +80,30 @@
             <img class="logo" src="{% static 'base/img/LaSante-logo.png' %}" alt="">
 
         </div>
-        <div class="col-7 text-right mt-3" >
+        <div class="col-7 text-right mt-3">
             <h5> La Santé Clinica laser Bolivia</h5>
             <h6 class="font-weight-bold"> N°: {{obj.id}}-{{year}}</h6>
 
             <h6 class="font-weight-bold"> ORIGINAL</h6>
-            
+
         </div>
     </div>
     <div class="text-center text-uppercase ">
-        <h3>RECIBO</h3>
+        <h3>COMPROBANTE DE INGRESO DE INSUMOS</h3>
     </div>
 
     <div class="col-12 text-uppercase mb-3 mt-3">
         <div class="row ml-3">
             <div class=" font-weight-bold mr-3">Fecha: </div>
-            <div class="desc"> {{ today|date:"d M Y" }} </div> 
-            
+            <div class="desc"> {{ today|date:"d M Y" }} </div>
+
         </div>
         <div class="row ml-3">
-           
-            <div class=" font-weight-bold mr-3">Señor(a): </div>
-            <div class="desc"> {{obj.paciente}} </div>
+
+            <div class=" font-weight-bold mr-3">Razon: </div>
+            <div class="desc"> {{obj.razon}} </div>
         </div>
-       
+
     </div>
 
     <div class="detalles col-12 mt-3">
@@ -113,62 +114,58 @@
 
 
     </div>
-    
+
     <div class="col-12">
         <table class="table table-bordered table-sm ">
 
 
             <tbody>
 
-                <tr class="table-secondary" >
+                <tr class="table-secondary">
                     <td>Detalle</td>
-                    <td>Sub total</td>
+                   
                 </tr>
                 <tr>
-                    <td>{% if obj.detalle_state %}
-                            {% for i in obj.detalle%}
-                            {{i.item}} <br>
-                            {% endfor %}
-                        {% else %}
-                        {{obj.detalle}}
-                        {% endif %}
+                    <td>
+                        {% for i in obj.detalle%}
+                        {{i.item}} <br>
+                        {% endfor %}
+                        
+
                     </td>
-                    <td>{{obj.monto}}  </td>
-                </tr>
-                <tr>
-                    <td>TOTAL:</td>
-                    <td class="table-info">{{obj.monto}}  </td>
+                    
                 </tr>
                
-              
+
+
             </tbody>
         </table>
     </div>
     <div class="text-center col-12 row">
-        
+
         <div class="col-6">
-            <p class="firma"> Entregué Conforme </p> 
-        </div> 
+            <p class="firma"> Entregué Conforme </p>
+        </div>
         <div class="col-6">
-            <p class="firma"> Recibí Conforme </p> 
-        </div> 
+            <p class="firma"> Recibí Conforme </p>
+        </div>
 
     </div>
-    
 
 
-   
-   
 
 
-   
+
+
+
+
     <!-- <div id="footer">
         Sistema de Administracion publicitaria - Rpk Srl.
     </div> -->
     <!-- </div> -->
 
 
-  
+
 </body>
 
 </html>

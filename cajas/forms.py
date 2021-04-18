@@ -36,15 +36,16 @@ class IngresoForm(forms.ModelForm):
 class EgresoForm(forms.ModelForm):
     class Meta:
         model = Egresos
-        fields = ['monto','detalle','fecha','num_factura' ,'estado', 'tipo_pago']
+        fields = ['monto','detalle','fecha','num_factura' ,'estado', 'tipo_pago', 'detalle_state']
     
-        widget = {'nombre': forms.TextInput, 'estado':forms.CheckboxInput, 'fecha':forms.DateInput}
+        widget = {'nombre': forms.TextInput, 'estado':forms.CheckboxInput, 'fecha':forms.DateInput,'detalle_state':forms.CheckboxInput}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in iter(self.fields):
             self.fields[field].widget.attrs.update({'class':'form-control', 'autocomplete':'off'})
-        # self.fields['estado'].widget.attrs.update({'class':'form-control custom-file-input'})
+        self.fields['estado'].widget.attrs.update({'class':'form-check-input'})
+        self.fields['detalle_state'].widget.attrs.update({'class':'form-check-input'})
 
 
 

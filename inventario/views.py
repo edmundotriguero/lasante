@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from django.views import generic
 from django.urls import reverse_lazy
@@ -14,11 +14,11 @@ from django.contrib.auth.decorators import login_required, permission_required
 import json
 from datetime import datetime, timedelta
 
+# from cajas.models import Egresos, Ingresos
+# from cajas.forms import EgresoForm, IngresoForm
 
-from .models import Unidad_medida, Item, Marca, Grupo_um
-from .forms import Unidad_medidaForm, MarcaForm, ItemForm
-
-
+from .models import Unidad_medida, Item, Marca, Grupo_um, Doc_ingreso, Doc_salida, Detalle_Ingreso, Consumo_inv
+from .forms import Unidad_medidaForm, MarcaForm, ItemForm, Doc_ingresoForm, Doc_salidaForm
 
 
 #  Clases para Unidad de medida
@@ -28,11 +28,12 @@ class UnidadMedidaView(LoginRequiredMixin, generic.ListView):
     context_object_name = 'obj'
     login_url = 'bases:login'
 
+
 class UnidadMedidaNew(LoginRequiredMixin, generic.CreateView):
     model = Unidad_medida
     template_name = 'unidad_medida/unidadmedida_form.html'
     context_object_name = 'obj'
-    form_class = Unidad_medidaForm  
+    form_class = Unidad_medidaForm
     success_url = reverse_lazy('inventario:unidadmedida_list')
     login_url = 'bases:login'
 
@@ -40,6 +41,7 @@ class UnidadMedidaNew(LoginRequiredMixin, generic.CreateView):
         form.instance.user_created = self.request.user
 
         return super().form_valid(form)
+
 
 class UnidadMedidaEdit(SuccessMessageMixin, LoginRequiredMixin, generic.UpdateView):
     model = Unidad_medida
@@ -81,7 +83,6 @@ def unidadmedida_disabled(request, id):
     return render(request, template_name, contexto)
 
 
-
 #  Clases para Marca de items
 class MarcaView(LoginRequiredMixin, generic.ListView):
     model = Marca
@@ -89,11 +90,12 @@ class MarcaView(LoginRequiredMixin, generic.ListView):
     context_object_name = 'obj'
     login_url = 'bases:login'
 
+
 class MarcaNew(LoginRequiredMixin, generic.CreateView):
     model = Marca
     template_name = 'marca/marca_form.html'
     context_object_name = 'obj'
-    form_class = MarcaForm  
+    form_class = MarcaForm
     success_url = reverse_lazy('inventario:marca_list')
     login_url = 'bases:login'
 
@@ -101,6 +103,7 @@ class MarcaNew(LoginRequiredMixin, generic.CreateView):
         form.instance.user_created = self.request.user
 
         return super().form_valid(form)
+
 
 class MarcaEdit(SuccessMessageMixin, LoginRequiredMixin, generic.UpdateView):
     model = Marca
@@ -206,7 +209,6 @@ def item_disabled(request, id):
     return render(request, template_name, contexto)
 
 
-
 # Clases para Unidad de venta
 
 # @login_required(login_url='/login/')
@@ -220,9 +222,11 @@ def grupo_um_list(request, id):
     for i in obj:
         objeto = {}
         objeto['id'] = i.id
-        objeto['um_origen'] = str(i.um_origen) + ' ' + str(i.item.unidad_medida_basica)
+        objeto['um_origen'] = str(i.um_origen) + ' ' + \
+            str(i.item.unidad_medida_basica)
         um = Unidad_medida.objects.get(pk=i.unidad_medida)
-        objeto['um_equivalencia'] = str(i.um_equivalencia) + ' ' + str(um.nombre )
+        objeto['um_equivalencia'] = str(
+            i.um_equivalencia) + ' ' + str(um.nombre)
         objeto['estado'] = i.estado
         obj_json.append(objeto)
 
@@ -318,17 +322,15 @@ def grupo_um_disabled(request, id):
     return render(request, template_name, contexto)
 
 
-
 # se usa por ajax: verifica si existe unidades de medida : retorna una cadena indicando si existe o no instancias.
-# para que pueda ser usado en la plantailla 
+# para que pueda ser usado en la plantailla
 def um_view_instance(request):
     if request.method == 'GET':
-        
-        
+
         um = Unidad_medida.objects.filter(estado=1).all()
         aux = ''
         query_json = []
-        
+
         aux = 'OK'
         query_json = []
         for item in um:
@@ -337,10 +339,250 @@ def um_view_instance(request):
             objeto['nombre'] = item.nombre
 
             query_json.append(objeto)
-            
-        
 
-        contexto = {'obj': aux, 'um':query_json}
+        contexto = {'obj': aux, 'um': query_json}
         return HttpResponse(json.dumps(contexto), content_type=json)
-    
+
     return HttpResponse({'obj': 'NONE'})
+
+
+# Clases para ingresos de stock
+
+def ingreso_stock_view(request):
+
+    template_name = 'ingreso_stock/ingreso_list.html'
+    contexto = 'obj'
+    obj = Doc_ingreso.objects.all()
+
+    inicio = request.GET.get('inicio')
+    final = request.GET.get('final')
+    # print(inicio)
+    # print(type(inicio))
+    if inicio:
+        obj = Doc_ingreso.objects.filter(fecha__range=(inicio, final))
+
+    if request.method == 'GET':
+        contexto = {'obj': obj}
+
+    # if request.method == 'POST':
+
+    #     # obj = Ingresos.objects
+    #     contexto = {'obj': obj}
+
+    return render(request, template_name, contexto)
+
+
+
+def ingreso_stock_new(request):
+    template_name = 'ingreso_stock/ingreso_form.html'
+    contexto = {}
+    form = Doc_ingresoForm()
+    
+    items = Item.objects.filter(estado=True).all()
+
+
+    
+
+    if request.method == 'GET':
+        contexto = { 'form':form, 'items':items}
+
+    if request.method == 'POST':
+        form = Doc_ingresoForm(request.POST)
+        if form.is_valid():
+            egre = form.save(commit=False)
+            egre.user_created = request.user
+            egre.save()
+            # print(egre.id)  
+            # print("id de formulario de salida ") 
+
+
+        iditem = request.POST.getlist('iditem[]')
+        idcantidad = request.POST.getlist('idcantidad[]') # total
+        idumb = request.POST.getlist('idumb[]')
+        multiplicador = request.POST.getlist('multiplicador[]')
+        idgrupo = request.POST.getlist('idgrupo[]')
+
+
+       
+        if idgrupo:
+           
+            for i in range(int(len(idgrupo))):
+                a = Item.objects.get(pk=iditem[i])
+                u = Unidad_medida.objects.get(pk=idumb[i])
+                
+                inv = Detalle_Ingreso(
+                    item=a,
+                    doc_ingreso=egre,
+                    cantidad_total=idcantidad[i],
+                    unidad_medida_t=u,
+                    grupo=idgrupo[i],
+                    multiplicador=multiplicador[i],
+                    user_created=request.user
+                )
+                inv.save()
+                a1 = a.cantidad
+                # print("cantidades para restar en stock")
+                # print(a1)
+                a2 = idcantidad[i]
+                # print(a2)
+                res = int(a1) + int(a2)
+                a.cantidad = res
+                a.user_updated = request.user.id
+                a.save()
+
+        # return HttpResponse('Reegistro Inactivo !!!')
+        return redirect("inventario:ingreso_stock_list")
+
+    return render(request, template_name, contexto)
+
+def ingreso_stock_print(request, id):
+    template_name = 'ingreso_stock/ingreso_print.html'
+    contexto = {}
+    obj = Doc_ingreso.objects.get(pk=id)
+    
+    i = Detalle_Ingreso.objects.filter(doc_ingreso=obj.id).first()
+    if i:
+        obj_list = []
+        ingreso = Detalle_Ingreso.objects.filter(doc_ingreso=i.id)
+        for j in ingreso:
+            objeto = {}
+            objeto["item"] = str(j.item.nombre) + " " + str(j.cantidad_total) + " " + str(j.unidad_medida_t.nombre)
+            obj_list.append(objeto)
+        obj.detalle = obj_list
+
+    today = obj.fecha
+    year = obj.fecha.year
+
+
+    if not obj:
+        return HttpResponse('Registro no encontrado ' + str(id))
+
+    if request.method == 'GET':
+        contexto = {'obj': obj, 'today':today, 'year':year}
+
+   
+
+    return render(request, template_name, contexto)
+
+
+
+
+
+# Clases para ingresos de stock
+
+def salida_stock_view(request):
+
+    template_name = 'salida_stock/salida_list.html'
+    contexto = 'obj'
+    obj = Doc_salida.objects.all()
+
+    inicio = request.GET.get('inicio')
+    final = request.GET.get('final')
+    # print(inicio)
+    # print(type(inicio))
+    if inicio:
+        obj = Doc_salida.objects.filter(fecha__range=(inicio, final))
+
+    if request.method == 'GET':
+        contexto = {'obj': obj}
+
+    # if request.method == 'POST':
+
+    #     # obj = Ingresos.objects
+    #     contexto = {'obj': obj}
+
+    return render(request, template_name, contexto)
+
+
+
+def salida_stock_new(request):
+    template_name = 'salida_stock/salida_form.html'
+    contexto = {}
+    form = Doc_salidaForm()
+    
+    items = Item.objects.filter(estado=True).all()
+
+
+    
+
+    if request.method == 'GET':
+        contexto = { 'form':form, 'items':items}
+
+    if request.method == 'POST':
+        form = Doc_salidaForm(request.POST)
+        if form.is_valid():
+            egre = form.save(commit=False)
+            egre.user_created = request.user
+            egre.save()
+            # print(egre.id)  
+            # print("id de formulario de salida ") 
+
+
+        iditem = request.POST.getlist('iditem[]')
+        idcantidad = request.POST.getlist('idcantidad[]') # total
+        idumb = request.POST.getlist('idumb[]')
+        multiplicador = request.POST.getlist('multiplicador[]')
+        idgrupo = request.POST.getlist('idgrupo[]')
+
+
+       
+        if idgrupo:
+           
+            for i in range(int(len(idgrupo))):
+                a = Item.objects.get(pk=iditem[i])
+                u = Unidad_medida.objects.get(pk=idumb[i])
+                
+                inv = Consumo_inv(
+                    item=a,
+                    doc_salida=egre,
+                    cantidad_total=idcantidad[i],
+                    unidad_medida_t=u,
+                    grupo=idgrupo[i],
+                    multiplicador=multiplicador[i],
+                    user_created=request.user
+                )
+                inv.save()
+                a1 = a.cantidad
+                # print("cantidades para restar en stock")
+                # print(a1)
+                a2 = idcantidad[i]
+                # print(a2)
+                res = int(a1) + int(a2)
+                a.cantidad = res
+                a.user_updated = request.user.id
+                a.save()
+
+        # return HttpResponse('Reegistro Inactivo !!!')
+        return redirect("inventario:salida_stock_list")
+
+    return render(request, template_name, contexto)
+
+def salida_stock_print(request, id):
+    template_name = 'salida_stock/salida_print.html'
+    contexto = {}
+    obj = Doc_salida.objects.get(pk=id)
+    
+    # i = Consumo_inv.objects.filter(doc_salida=obj.id).first()
+    
+    print("-=-=-=-=-=-=-=-=-")
+    obj_list = []
+    ingreso = Consumo_inv.objects.filter(doc_salida=obj.id)
+    for j in ingreso:
+        objeto = {}
+        objeto["item"] = str(j.item.nombre) + " " + str(j.cantidad_total) + " " + str(j.unidad_medida_t.nombre)
+        obj_list.append(objeto)
+    obj.detalle = obj_list
+
+    today = obj.fecha
+    year = obj.fecha.year
+
+
+    if not obj:
+        return HttpResponse('Registro no encontrado ' + str(id))
+
+    if request.method == 'GET':
+        contexto = {'obj': obj, 'today':today, 'year':year}
+
+   
+
+    return render(request, template_name, contexto)

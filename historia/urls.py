@@ -2,7 +2,7 @@ from django.urls import path
 from .views import CategoriaView, CategoriaNew, CategoriaEdit, categoria_disabled, \
                     subcategoria_list, sub_categoria_new, subcategoria_view_id, subcategoria_disabled, \
                          historia_new, historia_list ,\
-                             categoria_view_instance
+                             categoria_view_instance, item_view_instance
 
 
 urlpatterns = [
@@ -25,5 +25,7 @@ urlpatterns = [
     
     # ajax
     path('categoria/view_instance', categoria_view_instance),
+    path('item/view_instance', item_view_instance),
+
 
 ]

@@ -15,7 +15,7 @@
                 <div class="card card-primary">
                     <div class="card-header text-center">
 
-                        <h3 class="card-title">Registro de Egreso.</h3>
+                        <h3 class="card-title">Registro de Salida de stock.</h3>
 
                     </div>
                     <!-- /.card-header -->
@@ -25,10 +25,10 @@
                         <div class="card-body">
                             <div class="form-group row">
                                 <div class="col-6">
-                                    <label for="medico">Num documento:</label>
+                                    <label for="medico">Razon:</label>
                                     <!-- <input class="form-control" type="text" name="paciente" id="paciente" value="{{paciente.nombres}} {{paciente.apellidos}}" readonly>
                                     <input type="hidden" name="id_paciente" id="id_paciente" value="{{paciente.id}}"> -->
-                                    {{ form.num_factura }}
+                                    {{ form.razon }}
                                 </div>
                                 <div class="col-6">
                                     <label for="fecha_consulta" class="">Fecha actual:</label>
@@ -40,35 +40,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group row">
-                                <div class="col-6">
-                                    <label for="monto">Monto:</label>
-                                    <!-- <input class="form-control" type="number" name="monto" id="monto" step="0.01"> -->
-                                    {{ form.monto }}
-                                </div>
-                                <div class="col-6">
-                                    <label for="tipopago">Tipo de pago:</label>
-                                    <!-- <select class="form-control" name="tipopago" id="tipopago" required>
-                                        <option value="">Seleccione.</option>
-                                        {%for item in pago %}
-                                        <option value="{{item.id}}">{{item.nombre}}</option>
-                                        {% endfor  %}
-                                    </select> -->
-                                    {{form.tipo_pago}}
-                                </div>
-
-
-                            </div>
-                            <div class="form-group row ">
-                                <label >Registrar insumos:</label>
-                              
-                                    <div class="form-check m-3 ">
-                                       
-
-                                            {{ form.detalle_state}}
-                                        
-                                    </div>
-                            </div>
+                            
                             <div class="card m-0 p-0" id="form_item">
                                 <div class="form-group row card-body">
                                     <div class="col-5">
@@ -133,21 +105,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group ">
-                                <label for="id_nombre">Descripcion:</label>
-                                <!-- <textarea class="form-control" name="descripcion" id="descripcion" cols="30"
-                                    rows=5></textarea> -->
-                                {{ form.detalle}}
-                            </div>
-                            <div class="form-group  row">
-                                <label for="id_nombre">Estado:</label>
-                                <div class="form-check ml-3">
-
-                                    <!-- <textarea class="form-control" name="descripcion" id="descripcion" cols="30"
-                                        rows=5></textarea> -->
-                                    {{ form.estado}}
-                                </div>
-                            </div>
+                         
 
 
 
@@ -188,7 +146,7 @@
 
 
         $("#id_fecha").prop("readonly", true)
-        $("#form_item").hide()
+        // $("#form_item").hide()
 
         $('#btn_add').click(function () {
             agregar();
@@ -216,22 +174,7 @@
     });
 
 
-    $("#id_detalle_state").change(function () {
-        form_item = $("#form_item")
-        if ($("#id_detalle_state").is(':checked')) {
-            form_item.show() //muestra el formulario por de item
-
-            
-
-
-        } else {
-            form_item.hide()
-            // $("#id_fecha").prop('readonly', true)
-            // $("#id_fecha").val(fecha)
-
-
-        }
-    });
+    
     $("#item").change(function () {
         item = $("#item").val()
         um = $("#um")

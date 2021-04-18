@@ -82,12 +82,59 @@
 
     </div>
     <!-- /.row -->
+    <!-- TABLE: LATEST ORDERS -->
+    <div class="card col-8 bg-warning">
+        <div class="card-header border-transparent">
+            <h3 class="card-title">Lista de Item con cantidad minima</h3>
 
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body p-0 ">
+            <div class="table-responsive">
+                <table class="table m-0">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Cantidad</th>
+                            <th title="Cantidad minima admitida">Cant. minima </th>
+                            <th>Unidad de medida</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr>
+                            <td>{{item.item}}</td>
+                            <td>{{item.cantidad}}</td>
+                            <td>{{item.cantidad_minima}}</td>
+                            <td>{{item.um}}</td>
+                           
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.table-responsive -->
+        </div>
+        
+    </div>
+    <!-- /.card -->
+
+    
+</div>
 
     <!-- TABLE: LATEST ORDERS -->
-    <div class="card">
+    <div class="card col-12">
         <div class="card-header border-transparent">
-            <h3 class="card-title">Latest Orders</h3>
+            <h3 class="card-title">Lista de pacientes con cita HOY</h3>
 
             <div class="card-tools">
                 <button type="button" class="btn btn-tool" data-card-widget="collapse">

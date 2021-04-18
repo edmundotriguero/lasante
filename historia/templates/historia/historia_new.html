@@ -9,8 +9,8 @@
 
         <div class="row">
             <!-- left column -->
-            <div class="col-md-3"></div>
-            <div class="col-md-6">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
                 <!-- general form elements -->
                 <div class="card card-primary">
                     <div class="card-header">
@@ -36,7 +36,7 @@
                                         <option value="">Seleccione.</option>
                                         {%for med in medico %}
                                         <option value="{{med.id}}">{{med}}</option>
-                                        {%endfor  %}
+                                        {%endfor %}
                                     </select>
                                 </div>
                             </div>
@@ -48,7 +48,7 @@
                                         <option value="">Seleccione.</option>
                                         {%for item in cat %}
                                         <option value="{{item.id}}">{{item.nombre}}</option>
-                                        {%endfor  %}
+                                        {%endfor %}
                                     </select>
                                 </div>
                                 <div class="col-6">
@@ -57,11 +57,75 @@
                                     <label for="id_nombre">Sub categoria: <span id="subcategoria_state"
                                             class=" text-success"><i
                                                 class="fas fa-code-branch fa-lg fa-rotate-180 fa-flip-vertical "></i></span></label>
-                                    <select class="form-control" name="subcategoria[]" id="subcategoria" multiple="multiple">
+                                    <select class="form-control" name="subcategoria[]" id="subcategoria"
+                                        multiple="multiple">
                                         <option value=""></option>
                                     </select>
                                 </div>
                             </div>
+
+                            <div class="form-group row">
+                                <div class="col-5">
+                                    <label for="item">Items:</label>
+                                    <select class="form-control" name="item" id="item" >
+                                        <option value="">Seleccione.</option>
+                                        {%for item in items %}
+                                        <option value="{{item.id}}">{{item.nombre}}</option>
+                                        {%endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-2">
+
+
+                                    <label for="cantidad" title="Cantidad">Cant: </label>
+                                    <input class="form-control form-control-sm" type="number" name="cantidad"
+                                        id="cantidad">
+                                </div>
+                                <div class="col-4">
+
+
+                                    <label for="um" title="Unidad de medida">UM: </label>
+                                    <select class="form-control form-control-sm" name="um" id="um">
+                                        <option value=""></option>
+                                    </select>
+                                </div>
+                                <div class="col-1">
+
+                                    <button type="button" id="btn_add" class="btn btn-outline-success mt-3"><i
+                                            class="fas fa-plus"></i></button>
+                                </div>
+                                <input type="hidden" name="idum_basica" id="idum_basica" value="">
+                                <input type="hidden" name="um_basica" id="um_basica" value="">
+                                <input type="hidden" name="stock" id="stock" value="">
+
+                            </div>
+                            <div class="form-group row m-0 p-0">
+                                <div class="col-12 text-right">
+                                    <p class="m-0 p-0 bg-info text-dark" id="info">....</p>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="table-responsive">
+                                    <table id="detalles"
+                                        class="table table-sm table-striped table-bordered table-condensed table-hover ">
+                                        <thead class="bg-blue-active">
+                                            <th>Nro</th>
+                                            <th>Opciones</th>
+                                            <th>Item</th>
+                                            <th>Cantidad</th>
+                                            <th title="Unidad de medida.">UM</th>
+
+
+                                        </thead>
+
+                                        <tbody>
+
+                                        </tbody>
+
+                                    </table>
+                                </div>
+                            </div>
+
                             <div class="form-group ">
                                 <label for="id_nombre">Descripcion:</label>
                                 <textarea class="form-control" name="descripcion" id="descripcion" cols="30"
@@ -75,11 +139,11 @@
                                     <input type="checkbox" name="session" id="session">
                                 </div>
                                 <div class="col-5">
- 
+
 
                                     <label for="id_nombre">Fecha proxima cita:</label>
                                     <input type="date" class="form-control " id="proxima" name="proxima">
-                                    
+
 
                                 </div>
                                 <div class="col-4">
@@ -115,6 +179,8 @@
 <script>
     $(document).ready(function () {
         $("#categoria").select2({ placeholder: "Seleccione", allowClear: true, theme: "classic" });
+        $("#item").select2({ placeholder: "Seleccione", allowClear: true, theme: "classic" });
+        $("#um").select2({ placeholder: "Seleccione", allowClear: true, theme: "classic" });
         $("#subcategoria").select2({ placeholder: "Seleccione", allowClear: true, theme: "classic" });
         $("#medico").select2({ placeholder: "Seleccione", allowClear: true, theme: "classic" });
 
@@ -124,24 +190,156 @@
             // alert()
         });
 
-
-
         $("#subcategoria").prop('disabled', true)
         $("#subcategoria_state").hide()
         $("#proxima").prop('disabled', true)
         $("#hora").prop('disabled', true)
 
+        $("#info").hide()
+        $("#um").prop('disabled', true)
 
         var hoy = new Date();
         var fecha = hoy.getDate() + '/' + (hoy.getMonth() + 1) + '/' + hoy.getFullYear();
         var hora = hoy.getHours() + ':' + hoy.getMinutes() + ':' + hoy.getSeconds();
         var datetime_insitu = fecha + ' ' + hora;
         $('#fecha_consulta').val(datetime_insitu);
+
+
+
+        $('#btn_add').click(function () {
+            agregar();
+        });
     });
+
+    var cont = 1;
+    function agregar() {
+        /*  inicio variables   */
+        item_id = $("#item").val();
+
+        item = $("#item option:selected").text();
+
+        cantidad = $("#cantidad").val();
+        um_basica = $("#um_basica").val();
+        um_basica_id = $("#idum_basica").val();
+        um = $("#um option:selected").text();
+        um_equiv = um.split("-")[1]
+        um_id = $("#um").val();
+        stock = $("#stock").val()
+        
+        
+
+        res = 0
+        
+        console.log(um_id)
+        if(cantidad == ""){
+            alert("El campo cantidad no puede estar vacio!!! ");
+            return 
+        }
+        
+        if(um_id == "" || um_id == null){
+            // alert("se calcula por unidad sin grupo_um")
+            res = cantidad
+            um_id = 0
+            
+        } 
+        if(um_id == "-"){
+            alert("Debe elegir una unidad de medida")
+            return
+        }
+        if(um_id >0){
+            // alert("Se calcula por multiplicacion ")
+            res = cantidad * um_equiv
+        }
+        if(res > stock){
+            alert("La cantidad no puede ser mayor que el stock disponible.")
+            return
+        }
+        
+
+
+
+        if (cantidad != "") {
+
+            var fila = '<tr class="selected" id="fila' + cont + '"><td>' + cont + '</td>' +
+                '<td><button type="button" class="btn btn-warning" onclick="eliminar(' + cont + ');">X</button></td>' +
+                '<td><input type="hidden" name="iditem[]" value="' + item_id + '">' + item + '</td>' +
+                '<td><input type="hidden" name="idcantidad[]" value="' + res + '">' + res + '</td>' +
+                '<td><input type="hidden" name="idumb[]" value="' + um_basica_id + '">' + um_basica + '</td>' +
+                '<input type="hidden" name="idgrupo[]" value="' + um_id + '">'+'<input type="hidden" name="multiplicador[]" value="' + cantidad + '">' +'</tr>';
+            cont++;
+
+            $("#detalles").append(fila);
+
+        }
+        else {
+            alert("El campo cantidad no puede estar vacio!!! ");
+        }
+    }
+
+    function eliminar(index){
+        
+        $("#fila"+index).remove();
+        
+    }
 
     function goBack() {
         window.history.back()
     }
+
+    $("#item").change(function () {
+        item = $("#item").val()
+        um = $("#um")
+        info = $("#info")
+        idum_basica = $("#idum_basica")
+        um_basica = $("#um_basica")
+        stock = $("#stock")
+        info.hide()
+        var data = {
+            id_item: item
+        };
+        // data = JSON.stringify(data);
+        var token = '{{csrf_token}}';
+        console.log(data);
+
+        $.ajax({
+            headers: { "X-CSRFToken": token },
+            type: "GET",
+            url: "/historia/item/view_instance",
+            data: data,
+            success: function (response) {
+                // aux["order"][0].category
+                if (response['obj'] == 'OK') {
+
+                    console.log(response["sub_categoria"])
+                    um.find('option').remove()
+                    um.append('<option value="-"> Selecione</option>');
+                    for (let index = 0; index < response["sub_categoria"].length; index++) {
+                        um.append('<option value="' + response["sub_categoria"][index].id + '">' + response["sub_categoria"][index].unidad_medida + " - " + response["sub_categoria"][index].origen + '</option>');
+                    }
+                    um.prop('disabled', false)
+                }
+                if (response['obj'] == 'NOT') {
+                    um.hide()
+                    um.find('option').remove()
+                    um.prop('disabled', true)
+                }
+                aux = response;
+                console.log(aux);
+                info.show()
+                info.text("Cant disp: " + response['item'])
+                idum_basica.val(response["item_um"])
+                um_basica.val(response["item_um_n"])
+                stock.val(response["stock"])
+
+            },
+            error: function (jqXHR, textStatus, errorThrow) {
+                console.log(textStatus, errorThrow);
+                mensaje(errorThrow, 'red');
+                cerrar_modal();
+            }
+        });
+    });
+
 
     $("#categoria").change(function () {
         cat = $("#categoria").val()
@@ -153,10 +351,8 @@
         };
         // data = JSON.stringify(data);
         var token = '{{csrf_token}}';
-        // alert(token);
-        // alert(id);
-        console.log(data);
 
+        console.log(data);
         $.ajax({
             headers: { "X-CSRFToken": token },
             type: "GET",
@@ -172,7 +368,6 @@
                     subcategoria_select.append('<option value=""> Selecione</option>');
                     for (let index = 0; index < response["sub_categoria"].length; index++) {
                         subcategoria_select.append('<option value="' + response["sub_categoria"][index].id + '">' + response["sub_categoria"][index].nombre + '</option>');
-
                     }
                     subcategoria_select.prop('disabled', false)
                 }
@@ -210,7 +405,6 @@
             $("#hora").prop('required', false)
         }
     })
-
 
 </script>
 {% endblock %}

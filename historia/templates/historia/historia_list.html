@@ -89,14 +89,28 @@
                             {% else%}
                             <td>No registrado</td>
 
-                            {% endif %}
+                    {% endif %}
                         </tr>
                     </table>
                     <p>descripción: </p>
                     <p>{{item.descripcion}}</p>
+                    <h5>Items utilizados</h5>
+                    {% if item.item_state %}
+                    <table class="table table-sm table-bordered table-striped">
+                        
 
+                        {% for i in item.item_list %}
+                        <tr>
+                            <td>{{i.item}}</td>
+                        </tr>
 
-
+                        {% endfor %}
+                        
+                       
+                    </table>
+                    {% else %}
+                    <h6>{{item.item_list}}</h6>                    
+                    {% endif %}
                     {% endif %}
 
                 </div>
