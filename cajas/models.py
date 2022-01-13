@@ -24,6 +24,13 @@ class Ingresos(ClaseModelo):
     fecha = models.DateField(blank=False, null=False)
     tipo_pago = models.ForeignKey(Tipo_pago, on_delete=models.CASCADE)
 
+# class Ingresos_det(ClaseModelo):
+#     ingreso = models.ForeignKey(Ingresos, on_delete=models.CASCADE)
+#     cantidad 
+#     detalle 
+#     sub_total
+#     total 
+
 
 class Egresos(ClaseModelo):
     monto = models.FloatField(blank=False, null=False)

@@ -1,12 +1,14 @@
 from django.urls import path
 
-from .views import ingreso_view ,ingreso_new, IngresoEdit, ingreso_disabled, ingreso_print, \
+from .views import List_ingreso ,ingreso_new, IngresoEdit, ingreso_disabled, ingreso_print, \
     TipopagoView, TipopagoNew, TipopagoEdit, tipopago_disabled, \
     egreso_view, egreso_new, EgresoEdit, egreso_disabled, egreso_print
 urlpatterns = [
     # cidad para igreso
-    path('ingreso/', ingreso_view, name='ingreso_list'),
-    path('ingreso/GET', ingreso_view, name='ingreso_list'),
+    path('ingreso/', List_ingreso.as_view(), name='ingreso_list'),
+
+   # path('ingreso/', ingreso_view, name='ingreso_list'),
+   # path('ingreso/GET', ingreso_view, name='ingreso_list'),
     path('ingreso/new/<int:id>', ingreso_new, name='ingreso_new'),
     path('ingreso/edit/<int:pk>',
          IngresoEdit.as_view(), name='ingreso_edit'),

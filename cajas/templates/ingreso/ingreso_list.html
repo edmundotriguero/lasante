@@ -1,6 +1,4 @@
-{% extends 'bases/base.html' %}
-{% load static %}
-{% block page_content %}
+{% extends 'bases/base.html' %} {% load static %} {% block page_content %}
 <div class="content">
 
     <div class="row">
@@ -11,11 +9,9 @@
                 <h3 class="card-title">Listado de Ingresos por pago de pacientes</h3>
 
                 <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip"
-                        title="Collapse">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
                         <i class="fas fa-minus"></i></button>
-                    <button type="button" class="btn btn-tool" data-card-widget="remove" data-toggle="tooltip"
-                        title="Remove">
+                    <button type="button" class="btn btn-tool" data-card-widget="remove" data-toggle="tooltip" title="Remove">
                         <i class="fas fa-times"></i></button>
                 </div>
                 {% if perms.medico.delete_medico %}
@@ -38,13 +34,11 @@
                             </div>
                             <div class="col-3 my-1">
 
-                                <input class="form-control form-control-sm datetimex" type="text" name="inicio"
-                                    id="inicio" placeholder="Fecha inicio" required>
+                                <input class="form-control form-control-sm datetimex" type="text" name="inicio" id="inicio" placeholder="Fecha inicio" required>
                             </div>
                             <div class="col-3 my-1">
 
-                                <input class="form-control form-control-sm datetimex" type="text" name="final"
-                                    id="final" placeholder="Fecha final" required>
+                                <input class="form-control form-control-sm datetimex" type="text" name="final" id="final" placeholder="Fecha final" required>
                             </div>
                             <div class="col-2 my-1">
 
@@ -58,19 +52,23 @@
             </div>
             <div class="card-body">
 
-                {% if not obj %}
+                {% comment %} {% if not obj %}
                 <div class="alert alert-info">No hay registros que mostrar</div>
-                {% else %}
+                {% else %} {% endcomment %}
                 <div class="table-responsive">
 
-                    <table class="table table-sm table-bordered table-hover" id="table">
+                    <table class="table table-sm table-bordered table-hover" id="tabla_ingresos">
                         <thead>
                             <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">ID</th>
+
                                 <th scope="col">Fecha</th>
                                 <th scope="col">Paciente</th>
 
                                 <th scope="col">F. pago</th>
-                                <th scope="col">Ref</th>
+                                {% comment %}
+                                <th scope="col">Ref</th> {% endcomment %}
                                 <th scope="col">Monto</th>
 
                                 <th scope="col">Estado</th>
@@ -79,36 +77,31 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for item in obj %}
+                            {% comment %} {% for item in obj %}
                             <tr>
                                 <td>{{ item.fecha|date:'d/m/Y' }}</td>
                                 <td>{{ item.paciente.nombres }} {{ item.paciente.apellidos }}</th>
 
-                                <td>{{ item.tipo_pago }}</td>
-                                <td>{{ item.detalle }}</td>
-                                <td>{{ item.monto }}</td>
-                                <td>{{ item.estado|yesno:'Activo, Deshabilitado' }}</td>
-                                <td class="excludeThisClass">
+                                    <td>{{ item.tipo_pago }}</td>
+                                    <td>{{ item.detalle }}</td>
+                                    <td>{{ item.monto }}</td>
+                                    <td>{{ item.estado|yesno:'Activo, Deshabilitado' }}</td>
+                                    <td class="excludeThisClass">
 
-                                    <a target="blank" href="{% url 'cajas:ingreso_print' item.id %}"
-                                        class="btn btn-sm btn-outline-info btn-circle" role="button"><i
+                                        <a target="blank" href="{% url 'cajas:ingreso_print' item.id %}" class="btn btn-sm btn-outline-info btn-circle" role="button"><i
                                             class="fas fa-print fa-lg"></i></a>
-                                    <a href="{% url 'cajas:ingreso_edit' item.id %}"
-                                        class="btn btn-sm btn-outline-warning btn-circle" role="button"><i
+                                        <a href="{% url 'cajas:ingreso_edit' item.id %}" class="btn btn-sm btn-outline-warning btn-circle" role="button"><i
                                             class="far fa-edit fa-lg"></i></a>
-                                    <button class="btn btn-sm btn-outline-danger btn-circle"
-                                        onclick="return abrir_modal('{% url 'cajas:ingreso_disabled' item.id %}')"><i
+                                        <button class="btn btn-sm btn-outline-danger btn-circle" onclick="return abrir_modal('{% url 'cajas:ingreso_disabled' item.id %}')"><i
                                             class="fas fa-ban fa-lg"></i></button>
-                                </td>
+                                    </td>
                             </tr>
-                            {% endfor%}
+                            {% endfor%} {% endcomment %}
 
                         </tbody>
                     </table>
                 </div>
-                <strong>Montos expresados en Pesos Bolivianos (Bs).</strong>
-
-                {% endif %}
+                <strong>Montos expresados en Pesos Bolivianos (Bs).</strong> {% comment %} {% endif %} {% endcomment %}
 
             </div>
             <!-- /.card-body -->
@@ -126,26 +119,102 @@
 
 
 
-{% endblock %}
-
-{% block js_page %}
+{% endblock %} {% block js_page %}
 <script src="{% static 'base/js/xls/jquery.table2excel.js' %}"></script>
 <script>
+    $(document).ready(function() {
+        var token = '{{csrf_token}}';
+
+        $('#tabla_ingresos').DataTable({
+            "serverSide": true,
+            "processing": true,
+            "ajax": function(data, callback, settings) {
+                //var columna_filtro = data.columns[data.order[0].column];  //.data.replace(/\.g,"__");
+                $.get('/cajas/ingreso/', {
+                    limite: data.length,
+                    inicio: data.start,
+                    filtro: data.search.value
+                        //order_by: columna_filtro
+                }, function(res) {
+                    callback({
+                        recordsTotal: res.length,
+                        recordsFiltered: res.length,
+                        data: res.objects
+                    }); 
+                });
+
+            },
+            "columns": [{
+                    "data": "num"
+                }, {
+                    "data": "id"
+                }, {
+                    "data": "fecha"
+                }, {
+                    "data": "paciente"
+                }, {
+                    "data": "tipo_pago"
+                }, {
+                    "data": "monto"
+                }, {
+                    "data": "estado"
+                }, {
+                    "data": "action"
+                }
+
+            ]
+        });
+    });
+
+    // se captura el btn imprimir
+    $(document).on("click", ".btnImprimir", function() {
+
+        fila = $(this).closest("tr");
+        user_id = parseInt(fila.find('td:eq(1)').text()); //capturo el ID		            
+        //console.log("Editar " + user_id);
+        //location.href = '/cajas/ingreso/print/' + user_id;
+        window.open('/cajas/ingreso/print/'+ user_id) ;
+    });
+
+
+    // se captura el btn editar
+    $(document).on("click", ".btnEditar", function() {
+
+        fila = $(this).closest("tr");
+        user_id = parseInt(fila.find('td:eq(1)').text()); //capturo el ID		            
+        //console.log("Editar " + user_id);
+        location.href = '/cajas/ingreso/edit/' + user_id;
+    });
+
+
+    //se captura el btn elimina
+    $(document).on("click", ".btnBorrar", function() {
+
+        fila = $(this).closest("tr");
+        user_id = parseInt(fila.find('td:eq(1)').text()); //capturo el ID		            
+        console.log("Borrar " + user_id);
+        return abrir_modal('/cajas/ingreso/disabled/' + user_id);
+    });
+
+
+
 
 
     var d = new Date();
     var xls_name = 'reporte_ingreso-' + d.toDateString() + '-.xls'
-    $(document).ready(function () {
+    $(document).ready(function() {
         $('#data-table').DataTable();
-        $(".datetimex").focus(function () {
-            $(this).attr({ type: 'date' });
+        $(".datetimex").focus(function() {
+            $(this).attr({
+                type: 'date'
+            });
         });
 
 
 
     });
 
-    $("#btnExportar").click(function () {
+    $("#btnExportar").click(function() {
         $("#table").table2excel({
             // exclude CSS class
             exclude: ".excludeThisClass",
@@ -154,8 +223,5 @@
             fileext: ".xls" // file extension
         });
     });
-
-
-
 </script>
 {% endblock %}

@@ -20,7 +20,9 @@
   <!-- Jquery confir ventanas modales -->
   <link href="{% static 'base/plugins/jquery-confirm/jquery-confirm.min.css' %}" rel="stylesheet">
   <!-- cdn para jquery data table -->
-  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+  {% comment %} <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css"> {% endcomment %}
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css"><font></font>
+
   <!-- select 2 para inputs select -->
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
 </head>
@@ -475,14 +477,15 @@
   <!-- REQUIRED SCRIPTS -->
 
   <!-- jQuery -->
-  <script src="{% static 'base/plugins/jquery/jquery.min.js' %}"></script>
+  {% comment %} <script src="{% static 'base/plugins/jquery/jquery.min.js' %}"></script> {% endcomment %}
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- Bootstrap -->
   <script src="{% static 'base/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
   <!-- AdminLTE -->
   <script src="{% static 'base/js/adminlte.js' %}"></script>
   <!-- cdn para jquery table -->
   <script type="text/javascript" charset="utf8"
-    src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+    src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
 
   <!-- jquery confirm  modales -->
 

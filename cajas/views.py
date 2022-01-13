@@ -1,3 +1,4 @@
+from django.db.models.base import Model
 from django.shortcuts import render, redirect
 
 from django.views import generic
@@ -12,6 +13,8 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required, permission_required
 import json
 from datetime import datetime
+
+from django.db import connection
 
 from .models import Ingresos, Egresos, Tipo_pago
 from .forms import TipopagoForm, IngresoForm, EgresoForm
@@ -82,28 +85,78 @@ def tipopago_disabled(request, id):
 
 # Clases para Ingresos
 
-def ingreso_view(request):
+# def ingreso_view(request):
     
-    template_name = 'ingreso/ingreso_list.html'
-    contexto = 'obj'
-    obj = Ingresos.objects.all()
+#     template_name = 'ingreso/ingreso_list.html'
+#     contexto = 'obj'
+#     obj = Ingresos.objects.all()
 
-    inicio = request.GET.get('inicio')
-    final = request.GET.get('final')
-    print(inicio)
-    print(type(inicio))
-    if inicio:
-        obj = Ingresos.objects.filter(fecha__range = (inicio, final))
+#     inicio = request.GET.get('inicio')
+#     final = request.GET.get('final')
+#     print(inicio)
+#     print(type(inicio))
+#     if inicio:
+#         obj = Ingresos.objects.filter(fecha__range = (inicio, final))
 
-    if request.method == 'GET':
-        contexto = {'obj': obj}
+#     if request.method == 'GET':
+#         contexto = {'obj': obj}
 
-    if request.method == 'POST':
+#     if request.method == 'POST':
         
-        # obj = Ingresos.objects
-        contexto = {'obj': obj}
+#         # obj = Ingresos.objects
+#         contexto = {'obj': obj}
 
-    return render(request, template_name, contexto)
+#     return render(request, template_name, contexto)
+
+class List_ingreso(LoginRequiredMixin, generic.ListView):
+    model = Ingresos
+    template_name = 'ingreso/ingreso_list.html'
+    login_url = 'bases:login'
+
+    def get_queryset(self):      
+        return self.model.objects.filter(estado=True) #,
+                                         #nombre__icontains=self.request.GET.get('filtro')
+                                         #).values('id','nombre'
+                                         #)
+
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            #TODO: html_action mejorar para estos botones sean consumidos en front, se coloca aqui como solucion temporal por que no se pudo hacer funciona el columnDefs de dataTable
+            html_action = "<button class='btn btn-sm btn-outline-info btn-circle btnImprimir' ><i class='fas fa-print fa-lg'></i></button> "
+            html_action = html_action + "<button class='btn btn-sm btn-outline-warning btn-circle btnEditar' ><i class='far fa-edit fa-lg'></i></button>"
+            html_action = html_action + "<button class='btn btn-sm btn-outline-danger btn-circle btnBorrar' ><i class='fas fa-ban fa-lg'></i></button>"
+            inicio = int(request.GET.get('inicio'))
+            fin = int(request.GET.get('limite'))
+            list_data=[]
+            #obj = Ingresos.objects.filter(estado=True)
+            for indice,valor in enumerate(self.get_queryset()[inicio:inicio+fin],inicio):
+            #for indice,valor in enumerate(self.get_queryset()):
+                objeto = {}
+                objeto['num'] = indice +1
+                objeto['id'] = valor.id
+                objeto['paciente'] = valor.paciente.nombres + valor.paciente.apellidos
+                objeto['fecha'] = str(valor.fecha)
+                objeto['tipo_pago'] = valor.tipo_pago.nombre
+                objeto['monto'] =   valor.monto
+                objeto['estado'] = valor.estado
+                objeto['action'] = html_action
+                #objeto['action'] =  "<button class='btn btn-sm btn-outline-info btn-circle btnImprimir' ><i class='fas fa-print fa-lg'></i></button> 
+                # <button class='btn btn-sm btn-outline-warning btn-circle btnEditar' ><i class='far fa-edit fa-lg'></i></button>
+                #  <button class='btn btn-sm btn-outline-danger btn-circle btnBorrar' ><i class='fas fa-ban fa-lg'></i></button>"
+
+                #valor['id'] = indice + 1
+                list_data.append(objeto)
+            
+            data = {
+                'length': self.get_queryset().count(),
+                'objects':list_data
+            }
+
+        
+            return HttpResponse(json.dumps(data),'aplication/json')
+        else:
+            template_name = 'ingreso/ingreso_list.html'
+            return render(request, template_name)
 
 
 

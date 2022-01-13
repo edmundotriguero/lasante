@@ -39,7 +39,7 @@ class Sub_categoria(ClaseModelo):
 #     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, unique=True)
 #     expediente = models.CharField(max_length=50, blank=False, null=False)
 
-# TODO: se esta aumentando el campo hora proxima debodo a que django me muestra una fecha en el back end y en la plantilla mee muestra otra fecha ya formateada 
+# TODO: se esta aumentando el campo hora proxima debido a que django me muestra una fecha en el back end y en la plantilla mee muestra otra fecha ya formateada 
 # TODO: Averiguar como se puede obtener esa fecha con otros formatos utc 
 class Historia(ClaseModelo):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
