@@ -23,6 +23,7 @@ class Ingresos(ClaseModelo):
     detalle = models.TextField(blank=True, null=True)
     fecha = models.DateField(blank=False, null=False)
     tipo_pago = models.ForeignKey(Tipo_pago, on_delete=models.CASCADE)
+    hist = models.TextField(blank=True, null=True)
 
 # class Ingresos_det(ClaseModelo):
 #     ingreso = models.ForeignKey(Ingresos, on_delete=models.CASCADE)
@@ -39,5 +40,6 @@ class Egresos(ClaseModelo):
     num_factura = models.CharField(max_length=100,  blank=False, null=False)
     tipo_pago = models.ForeignKey(Tipo_pago, on_delete=models.CASCADE)
     detalle_state = models.BooleanField(blank=False)
+    hist = models.TextField(blank=True, null=True)
 
 

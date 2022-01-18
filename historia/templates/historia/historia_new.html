@@ -4,30 +4,30 @@
 
 <section class="content ">
 
-
+    <form method="POST">
     <div class="container-fluid">
 
         <div class="row">
             <!-- left column -->
-            <div class="col-md-2"></div>
+            
             <div class="col-md-8">
                 <!-- general form elements -->
                 <div class="card card-primary">
                     <div class="card-header">
 
-                        <h3 class="card-title">Registro de historia clinica</h3>
+                        <h3 class="card-title">Registro de historia clinica:  <strong>{{paciente.nombres}} {{paciente.apellidos}}</strong>  </h3>
 
                     </div>
                     <!-- /.card-header -->
                     <!-- form start -->
-                    <form method="POST">
+                    
                         {% csrf_token %}
                         <div class="card-body">
                             <div class="form-group row">
                                 <div class="col-6">
                                     <label for="fecha_consulta" class="">Fecha actual:</label>
-                                    <input type="datetime" class="form-control  " id="fecha_consulta"
-                                        name="fecha_consulta" readonly>
+                                    <input type="datetime-local" class="form-control  " id="fecha_consulta"
+                                        name="fecha_consulta" >
 
                                 </div>
                                 <div class="col-6">
@@ -165,12 +165,49 @@
                             <button type="button" class="btn btn-danger" onclick="goBack()">Volver</button>
                             <button type="submit" class="btn btn-success">Guardar</button>
                         </div>
-                    </form>
+                    
                 </div>
                 <!-- /.card -->
             </div>
+
+            <div class="col-md-4">
+                <div class="card card-primary">
+                    <div class="card-header">
+
+                        <h3 class="card-title">Cajas</h3>
+
+                    </div>
+                    <div class="card-body">
+                       
+<input type="hidden" name="id_paciente" id="id_paciente" value="{{paciente.id}}">
+                        <div class="form-group row">
+                            <div class="col-6">
+                                <label for="monto">Monto:</label>
+                                <input class="form-control" type="number" name="monto" id="monto" step="0.01" required>
+                            </div>
+                            <div class="col-6">
+                                <label for="tipopago">Tipo de pago:</label>
+                                <select class="form-control" name="tipopago" id="tipopago" required>
+                                    <option value="">Seleccione.</option>
+                                    {%for item in pago %}
+                                    <option value="{{item.id}}">{{item.nombre}}</option>
+                                    {% endfor  %}
+                                </select>
+                            </div>
+                            
+
+                        </div>
+                        
+                        
+
+
+
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+</form>
 </section>
 
 {% endblock %}
@@ -198,18 +235,38 @@
         $("#info").hide()
         $("#um").prop('disabled', true)
 
-        var hoy = new Date();
-        var fecha = hoy.getDate() + '/' + (hoy.getMonth() + 1) + '/' + hoy.getFullYear();
-        var hora = hoy.getHours() + ':' + hoy.getMinutes() + ':' + hoy.getSeconds();
-        var datetime_insitu = fecha + ' ' + hora;
-        $('#fecha_consulta').val(datetime_insitu);
+      //  var hoy = new Date();
+      //  var fecha = hoy.getDate() + '/' + (hoy.getMonth() + 1) + '/' + hoy.getFullYear();
+      //  var hora = hoy.getHours() + ':' + hoy.getMinutes() + ':' + hoy.getSeconds();
+      //  var datetime_insitu = fecha + ' ' + hora;
+      //  $('#fecha_consulta').val(datetime_insitu);
 
 
 
         $('#btn_add').click(function () {
             agregar();
         });
+
+        /// ------------------- inicializacion para cajas para cajas
+        $("#tipopago").select2({ placeholder: "Seleccione", allowClear: true, theme: "classic" });
+
+        var hoy = new Date();
+
+        // var fecha = hoy.getDate() + '/' + (hoy.getMonth() + 1) + '/' + hoy.getFullYear(); // Fecha cambiada para que se pueda ingresar fecha personalizada
+        var fecha =  hoy.getFullYear() + '-' + ("0" + (hoy.getMonth() + 1)).slice(-2) + '-' + hoy.getDate() +'T' + ("0"+hoy.getHours()).slice(-2) + ':'+ ("0"+hoy.getMinutes()).slice(-2);
+
+       
+        var datetime_insitu = fecha.toString();
+        console.log(datetime_insitu);
+        $('#fecha_consulta').val(datetime_insitu);
+
+
     });
+
+// para Deshabilitado la fecha automatica
+
+
+
 
     var cont = 1;
     function agregar() {

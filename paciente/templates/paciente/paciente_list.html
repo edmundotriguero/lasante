@@ -27,28 +27,29 @@
             </div>
             <div class="card-body">
 
-                {% if not obj %}
+                {% comment %} {% if not obj %}
                 <div class="alert alert-info">No hay registros que mostrar</div>
-                {% else %}
+                {% else %} {% endcomment %}
                 <div class="table-responsive">
 
-                    <table class="table table-sm table-bordered table-hover" id="data-table">
+                    <table class="table table-sm table-bordered table-hover" id="tabla_paciente">
                         <thead>
                             <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Id</th>
                                 <th scope="col">Nombres</th>
-                                
                                 <th scope="col">Edad</th>
                                 <th scope="col">Tel Movil</th>
                                 <th scope="col">Correo</th>
                                 <th scope="col">Genero</th>
-                                <th scope="col">Estado</th>
+                                {% comment %} <th scope="col">Estado</th> {% endcomment %}
                                 <th scope="col">Cajas</th>
-                                <th scope="col">Historia</th>
+                                {% comment %} <th scope="col">Historia</th> {% endcomment %}
                                 <th class="all">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for item in obj %}
+                            {% comment %} {% for item in obj %}
                             <tr>
                                 <td>{{ item.nombres }} {{ item.apellidos }}</th>
                                 
@@ -86,13 +87,13 @@
                                         onclick="return abrir_modal('{% url 'paciente:paciente_disabled' item.id %}')"><i class="fas fa-users-slash"></i></button>
                                 </td>
                             </tr>
-                            {% endfor%}
+                            {% endfor%} {% endcomment %}
 
                         </tbody>
                     </table>
                 </div>
 
-                {% endif %}
+                {% comment %} {% endif %} {% endcomment %}
 
             </div>
             <!-- /.card-body -->
@@ -188,13 +189,115 @@
 <script>
 
     $(document).ready(function () {
-        $('#data-table').DataTable();
         $("#no_info").show()
         $("#carga").hide()
-
+        
         $("#info").hide()
+        
+        // Funcion para llenar tabla de listado de pacientes.
+        
+        $('#tabla_paciente').DataTable({
+            "serverSide": true,
+            "processing": true,
+            "ajax": function(data, callback, settings) {
+                var columna_filtro = data.columns[data.order[0].column].data.replace(/\./g,"__");
+                $.get('/paciente/paciente/', {
+                    limite: data.length,
+                    inicio: data.start,
+                    filtro: data.search.value,
+                    order_by: columna_filtro
+                }, function(res) {
+                    callback({
+                        recordsTotal: res.length,
+                        recordsFiltered: res.length,
+                        data: res.objects
+                    }); 
+                });
+
+            },
+            "columns": [{
+                    "data": "id"
+                }, {
+                    "data": "num","orderable": false
+                }, {
+                    "data": "nombres"
+                }, {
+                    "data": "fecha_nacimiento"
+                }, {
+                    "data": "celular"
+                }, {
+                    "data": "correo"
+                }, {
+                    "data": "genero", "orderable": false
+                }, {
+                    "data": "action1","orderable": false
+                },
+                {
+                    "data": "action2","orderable": false
+                }
+
+            ]
+        });
+        
+
 
     });
+
+//************************************************************
+// se captura el btn imprimir
+$(document).on("click", ".btn_add", function() {
+
+    fila = $(this).closest("tr");
+    user_id = parseInt(fila.find('td:eq(0)').text()); //capturo el ID		            
+    //console.log("Editar " + user_id);
+    //location.href = '/cajas/ingreso/print/' + user_id;
+    window.location.href = ('/historia/historia/new/'+ user_id) ;
+});
+
+// se captura el btn imprimir
+$(document).on("click", ".btn_ver", function() {
+
+    fila = $(this).closest("tr");
+    user_id = parseInt(fila.find('td:eq(1)').text()); //capturo el ID		            
+    //console.log("Borrar " + user_id);
+    return abrir_modal('/historia/historia/list/' + user_id);
+});
+
+// se captura el btn imprimir
+$(document).on("click", ".btnImprimir", function() {
+
+    fila = $(this).closest("tr");
+    user_id = parseInt(fila.find('td:eq(1)').text()); //capturo el ID		            
+    //console.log("Borrar " + user_id);
+    info(user_id);
+});
+
+
+// se captura el btn editar
+$(document).on("click", ".btnEditar", function() {
+
+    fila = $(this).closest("tr");
+    user_id = parseInt(fila.find('td:eq(1)').text()); //capturo el ID		            
+    //console.log("Editar " + user_id);
+    location.href = '/paciente/paciente/edit/' + user_id;
+});
+
+
+//se captura el btn elimina
+$(document).on("click", ".btnBorrar", function() {
+
+    fila = $(this).closest("tr");
+    user_id = parseInt(fila.find('td:eq(1)').text()); //capturo el ID		            
+    console.log("Borrar " + user_id);
+    return abrir_modal('/paciente/paciente/disabled/' + user_id);
+});
+
+
+
+
+//************************************************************
+
+
     function info(id) {
         $("#carga").show()
 

@@ -3,6 +3,8 @@ from django.shortcuts import render, redirect
 from django.views import generic
 from django.urls import reverse_lazy
 
+from django.db import transaction
+
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -20,6 +22,7 @@ from .forms import CategoriaForm
 from paciente.models import Paciente
 from medico.models import Medico
 from inventario.models import Item, Grupo_um, Unidad_medida, Doc_salida, Consumo_inv
+from cajas.models import Ingresos, Tipo_pago
 
 
 # Clases para Categoria
@@ -193,13 +196,14 @@ def historia_new(request, id):
     cat = Categoria.objects.filter(estado=True).all()
     medico = Medico.objects.filter(estado=True).all()
     items = Item.objects.filter(estado=True).all()
-
+    pago = Tipo_pago.objects.filter(estado=True).all()
+    paciente = Paciente.objects.filter(estado=True,id=id).get()
 
     if not obj:
         return HttpResponse('Subcategoria not ' + str(id))
 
     if request.method == 'GET':
-        contexto = {'obj': obj, 'cat': cat, 'medico':medico, 'items':items}
+        contexto = {'obj': obj, 'cat': cat, 'medico':medico, 'items':items, 'pago':pago, 'paciente':paciente}
 
     if request.method == 'POST':
         categoria = request.POST.get('categoria')
@@ -220,6 +224,11 @@ def historia_new(request, id):
         idgrupo = request.POST.getlist('idgrupo[]')
 
 
+        monto = request.POST.get('monto')
+        tipopago = request.POST.get('tipopago')
+
+        print(monto)
+        print(tipopago)
         # print(iditem)        
         # print('dato id item')
 
@@ -228,62 +237,84 @@ def historia_new(request, id):
         else: 
             fecha_proxima = None
 
-        fecha_consulta = datetime.strptime(fecha_consulta, "%d/%m/%Y %H:%M:%S")
+        # fecha_consulta = datetime.strptime(fecha_consulta, "%d/%m/%Y %H:%M:%S")
+        fecha_consulta = datetime.strptime(fecha_consulta, "%Y-%m-%dT%H:%M")
         
+
         if proxima_session == 'on':
             session = True
         else:
             session = False
         # print("===========")
-        print(subcategoria)
-        obj = Historia(
-            paciente_id=id,
-            categoria_id=categoria,
-            sub_categoria=subcategoria,
-            medico_id=medico,
-            proxima_session=session,
-            descripcion=descripcion,
-            fecha_consulta=fecha_consulta,
-            fecha_proxima=fecha_proxima,
-            hora_proxima=hora,
-            estado=True,
-            
-            user_created=request.user
 
-        )
-        obj.save()
-        print(len(idgrupo))
-        if idgrupo:
-            doc = Doc_salida (
-                fecha = fecha_consulta,
-                razon = 'tratamiento en visita medica',
-                historia_id= obj.id,
-                user_created= request.user
-            )
-            doc.save()
-            for i in range(int(len(idgrupo))):
-                a = Item.objects.get(pk=iditem[i])
-                u = Unidad_medida.objects.get(pk=idumb[i])
+
+        #print(subcategoria)
+
+        with transaction.atomic():
+            obj = Historia(
+                paciente_id=id,
+                categoria_id=categoria,
+                sub_categoria=subcategoria,
+                medico_id=medico,
+                proxima_session=session,
+                descripcion=descripcion,
+                fecha_consulta=fecha_consulta,
+                fecha_proxima=fecha_proxima,
+                hora_proxima=hora,
+                estado=True,
                 
-                inv = Consumo_inv(
-                    item=a,
-                    doc_salida=doc,
-                    cantidad_total=idcantidad[i],
-                    unidad_medida_t=u,
-                    grupo=idgrupo[i],
-                    multiplicador=multiplicador[i],
-                    user_created=request.user
-                )
-                inv.save()
-                a1 = a.cantidad
-                # print("cantidades para restar en stock")
-                # print(a1)
-                a2 = idcantidad[i]
-                # print(a2)
-                res = int(a1) - int(a2)
-                a.cantidad = res
-                a.user_updated = request.user.id
-                a.save()
+                user_created=request.user
+
+            )
+            obj.save()
+            print(len(idgrupo))
+            
+            ingreso = Ingresos (
+                paciente_id=id,
+                detalle=descripcion,
+                fecha=fecha_consulta,
+                monto=monto,
+                estado=True,
+                tipo_pago_id=tipopago,
+                user_created=request.user,
+                hist = obj.id
+            )
+            ingreso.save()
+
+
+
+            if idgrupo:
+                with transaction.atomic():
+                    doc = Doc_salida (
+                        fecha = fecha_consulta,
+                        razon = 'tratamiento en visita medica',
+                        historia_id= obj.id,
+                        user_created= request.user
+                    )
+                    doc.save()
+                    for i in range(int(len(idgrupo))):
+                        a = Item.objects.get(pk=iditem[i])
+                        u = Unidad_medida.objects.get(pk=idumb[i])
+                        
+                        inv = Consumo_inv(
+                            item=a,
+                            doc_salida=doc,
+                            cantidad_total=idcantidad[i],
+                            unidad_medida_t=u,
+                            grupo=idgrupo[i],
+                            multiplicador=multiplicador[i],
+                            user_created=request.user
+                        )
+                        inv.save()
+                        a1 = a.cantidad
+                        # print("cantidades para restar en stock")
+                        # print(a1)
+                        a2 = idcantidad[i]
+                        # print(a2)
+                        res = int(a1) - int(a2)
+                        a.cantidad = res
+                        a.user_updated = request.user.id
+                        a.save()
 
         # return HttpResponse('Reegistro Inactivo !!!')
         return redirect("paciente:paciente_list")

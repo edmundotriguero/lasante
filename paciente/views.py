@@ -19,6 +19,7 @@ from .forms import GeneroForm, CiudadForm, DocumentoForm, PacienteForm
 
 from historia.models import Historia, Categoria, Sub_categoria
 
+from django.db.models import Q, F
 
 #  Clases para Genero
 class GeneroView(LoginRequiredMixin, generic.ListView):
@@ -207,8 +208,53 @@ def documento_disabled(request, id):
 class PacienteView(LoginRequiredMixin, generic.ListView):
     model = Paciente
     template_name = 'paciente/paciente_list.html'
-    context_object_name = 'obj'
+    #context_object_name = 'obj'
     login_url = 'bases:login'
+    
+    def get_queryset(self):      
+        return self.model.objects.filter( Q(nombres__icontains=self.request.GET.get('filtro')) | Q(apellidos__icontains=self.request.GET.get('filtro') )| Q(celular__icontains=self.request.GET.get('filtro')) | Q(correo__icontains=self.request.GET.get('filtro')), estado=True).order_by(f'{self.request.GET.get("order_by")}')
+
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            #TODO: html_action mejorar para estos botones sean consumidos en front, se coloca aqui como solucion temporal por que no se pudo hacer funciona el columnDefs de dataTable
+            html_action = "<button class='btn btn-sm btn-outline-success btn-circle btn_add' ><i class='fas fa-file-medical-alt'></i> Add</button>"
+            html_action = html_action + "<button class='btn btn-sm btn-outline-info btn-circle btn_ver' ><i class='fas fa-file-medical-alt'></i> Ver</button>"
+
+            html_action1 = "<button class='btn btn-sm btn-outline-success btn-circle btnImprimir' ><i class='fas fa-info'></i></button>"
+            html_action1 = html_action1 +  "<button class='btn btn-sm btn-outline-warning btn-circle btnEditar' ><i class='far fa-edit'></i></button>"
+            html_action1 = html_action1 + "<button class='btn btn-sm btn-outline-danger btn-circle btnBorrar ' ><i class='fas fa-users-slash'></i></button>"
+            inicio = int(request.GET.get('inicio'))
+            fin = int(request.GET.get('limite'))
+            list_data=[]
+            #obj = Ingresos.objects.filter(estado=True)
+            for indice,valor in enumerate(self.get_queryset()[inicio:inicio+fin],inicio):
+            #for indice,valor in enumerate(self.get_queryset()):
+                objeto = {}
+                objeto['num'] = indice +1
+                objeto['id'] = str(valor.id) + '-lst'
+                objeto['nombres'] = valor.nombres + ' ' + valor.apellidos
+                objeto['fecha_nacimiento'] = str(valor.edad()) + 'años'
+                
+                objeto['celular'] = valor.celular
+                objeto['correo'] =   valor.correo
+                objeto['genero'] = str(valor.genero.nombre)
+                objeto['action1'] = html_action
+                objeto['action2'] = html_action1
+            
+                list_data.append(objeto)
+            
+            data = {
+                'length': self.get_queryset().count(),
+                'objects':list_data
+            }
+
+        
+            return HttpResponse(json.dumps(data),'aplication/json')
+        else:
+            template_name = 'paciente/paciente_list.html'
+            return render(request, template_name)
+
+
 
 class PacienteNew(LoginRequiredMixin, generic.CreateView):
     model = Paciente
