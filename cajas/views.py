@@ -112,9 +112,27 @@ class List_ingreso(LoginRequiredMixin, generic.ListView):
     model = Ingresos
     template_name = 'ingreso/ingreso_list.html'
     login_url = 'bases:login'
+    
 
-    def get_queryset(self):      
-        return self.model.objects.filter(estado=True) #,
+
+    
+
+    def get_queryset(self):
+        f_inicio  = self.request.GET.get('f_inicio')
+        f_final  = self.request.GET.get('f_final')
+
+        query = "SELECT ci.id id, ci.fecha fecha, concat(pa.nombres,' ' ,pa.apellidos) pacie, tp.nombre forma_pago, concat(med.nombres, ' ' , med.apellidos) med, cat.nombre cat,  ci.monto mon" 
+        query = query + " from cajas_ingresos ci left JOIN historia_historia his on ci.hist = his.id "
+        query = query + "INNER JOIN paciente_paciente pa on pa.id = ci.paciente_id "
+        query = query + "INNER JOIN cajas_tipo_pago tp on tp.id = ci.tipo_pago_id "
+        query = query + "LEFT JOIN medico_medico med on med.id = his.medico_id "
+        query = query + "left join historia_categoria cat on cat.id = his.categoria_id "
+        query = query + " where ci.estado = 1 "
+        #query = query + " and ci.fecha BETWEEN str_to_date('" + f_inicio + "','%%Y-%%m-%%d') and  str_to_date('" + f_final + "','%%Y-%%m-%%d')"
+#BETWEEN str_to_date('2021-12-01','%Y-%m-%d') and  str_to_date('2021-12-31','%Y-%m-%d')
+        query = query + " ORDER by " + self.request.GET.get('order_by') 
+        print(query)
+        return self.model.objects.raw( query) #,
                                          #nombre__icontains=self.request.GET.get('filtro')
                                          #).values('id','nombre'
                                          #)
@@ -129,29 +147,32 @@ class List_ingreso(LoginRequiredMixin, generic.ListView):
             fin = int(request.GET.get('limite'))
             list_data=[]
             #obj = Ingresos.objects.filter(estado=True)
+            print(self.get_queryset())
             for indice,valor in enumerate(self.get_queryset()[inicio:inicio+fin],inicio):
             #for indice,valor in enumerate(self.get_queryset()):
+                print(valor.fecha)
                 objeto = {}
                 objeto['num'] = indice +1
                 objeto['id'] = valor.id
-                objeto['paciente'] = valor.paciente.nombres + valor.paciente.apellidos
                 objeto['fecha'] = str(valor.fecha)
-                objeto['tipo_pago'] = valor.tipo_pago.nombre
-                objeto['monto'] =   valor.monto
-                objeto['estado'] = valor.estado
+                objeto['pacie'] = valor.pacie
+                objeto['forma_pago'] = valor.forma_pago
+                objeto['med'] =   valor.med
+                objeto['cat'] = valor.cat
+                objeto['mon'] = valor.mon
                 objeto['action'] = html_action
-                #objeto['action'] =  "<button class='btn btn-sm btn-outline-info btn-circle btnImprimir' ><i class='fas fa-print fa-lg'></i></button> 
-                # <button class='btn btn-sm btn-outline-warning btn-circle btnEditar' ><i class='far fa-edit fa-lg'></i></button>
-                #  <button class='btn btn-sm btn-outline-danger btn-circle btnBorrar' ><i class='fas fa-ban fa-lg'></i></button>"
+                # #objeto['action'] =  "<button class='btn btn-sm btn-outline-info btn-circle btnImprimir' ><i class='fas fa-print fa-lg'></i></button> 
+                # # <button class='btn btn-sm btn-outline-warning btn-circle btnEditar' ><i class='far fa-edit fa-lg'></i></button>
+                # #  <button class='btn btn-sm btn-outline-danger btn-circle btnBorrar' ><i class='fas fa-ban fa-lg'></i></button>"
 
-                #valor['id'] = indice + 1
+                # #valor['id'] = indice + 1
                 list_data.append(objeto)
             
             data = {
-                'length': self.get_queryset().count(),
+                'length': len(list(self.get_queryset())),
                 'objects':list_data
             }
-
+            
         
             return HttpResponse(json.dumps(data),'aplication/json')
         else:
