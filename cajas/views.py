@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.contrib.messages.views import SuccessMessageMixin
 
 
-from django.http import HttpResponse
+from django.http import HttpResponse, StreamingHttpResponse
 from django.contrib.auth.decorators import login_required, permission_required
 import json
 from datetime import datetime
@@ -131,7 +131,7 @@ class List_ingreso(LoginRequiredMixin, generic.ListView):
         #query = query + " and ci.fecha BETWEEN str_to_date('" + f_inicio + "','%%Y-%%m-%%d') and  str_to_date('" + f_final + "','%%Y-%%m-%%d')"
 #BETWEEN str_to_date('2021-12-01','%Y-%m-%d') and  str_to_date('2021-12-31','%Y-%m-%d')
         query = query + " ORDER by " + self.request.GET.get('order_by') 
-        print(query)
+        #print(query)
         return self.model.objects.raw( query) #,
                                          #nombre__icontains=self.request.GET.get('filtro')
                                          #).values('id','nombre'
@@ -147,10 +147,10 @@ class List_ingreso(LoginRequiredMixin, generic.ListView):
             fin = int(request.GET.get('limite'))
             list_data=[]
             #obj = Ingresos.objects.filter(estado=True)
-            print(self.get_queryset())
+            #print(self.get_queryset())
             for indice,valor in enumerate(self.get_queryset()[inicio:inicio+fin],inicio):
             #for indice,valor in enumerate(self.get_queryset()):
-                print(valor.fecha)
+                #print(valor.fecha)
                 objeto = {}
                 objeto['num'] = indice +1
                 objeto['id'] = valor.id
@@ -179,6 +179,43 @@ class List_ingreso(LoginRequiredMixin, generic.ListView):
             template_name = 'ingreso/ingreso_list.html'
             return render(request, template_name)
 
+# ---------------------
+
+def ingreso_export(request, fecha, fecha1):
+
+    print(fecha)
+    
+    print(fecha1)
+    query = "SELECT ci.id id, ci.fecha fecha, concat(pa.nombres,' ' ,pa.apellidos) pacie, tp.nombre forma_pago, concat(med.nombres, ' ' , med.apellidos) med, cat.nombre cat,  ci.monto mon" 
+    query = query + " from cajas_ingresos ci left JOIN historia_historia his on ci.hist = his.id "
+    query = query + "INNER JOIN paciente_paciente pa on pa.id = ci.paciente_id "
+    query = query + "INNER JOIN cajas_tipo_pago tp on tp.id = ci.tipo_pago_id "
+    query = query + "LEFT JOIN medico_medico med on med.id = his.medico_id "
+    query = query + "left join historia_categoria cat on cat.id = his.categoria_id "
+    query = query + " where ci.estado = 1 "
+    query = query + " and ci.fecha BETWEEN str_to_date('" + fecha + "','%%Y-%%m-%%d') and  str_to_date('" + fecha1 + "','%%Y-%%m-%%d')"
+#BETWEEN str_to_date('2021-12-01','%Y-%m-%d') and  str_to_date('2021-12-31','%Y-%m-%d')
+    query = query + " ORDER by id" 
+    #print(query)
+    ingreso = Ingresos.objects.raw(query) 
+    
+
+    response = StreamingHttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = "attachment;filename=report_ingresos.csv"
+
+    #rows = ("{}|{}\n".format(row.id,row.pacie) for row in ingreso)
+    lista = []
+    cabecera = "{}|{}|{}|{}|{}|{}|{}\n".format('ID','FECHA','PACIENTE','FORMA DE PAGO','MEDICO','CATEGORIA','MONTO')
+    lista.append(cabecera)
+    for i in ingreso:
+        fila = "{}|{}|{}|{}|{}|{}|{}\n".format(i.id,i.fecha,i.pacie,i.forma_pago,i.med,i.cat,i.mon)
+        lista.append(fila)
+    response.streaming_content = lista
+
+    #print(type(rows))
+   # print(type(rows))
+   # response = HttpResponse('success')
+    return response
 
 
 # ----------

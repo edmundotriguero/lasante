@@ -23,10 +23,10 @@
                 </div>
                 {% endif %} {% endcomment %}
             </div>
-            {% comment %} <div class="card-body">
+            <div class="card-body">
                 <div class=" border-bottom mb-4 ">
                     {% csrf_token %}
-                    <form action="GET">
+                   
                         <!-- <div class="col-6"></div> -->
                         <div class=" form-row align-items-rigth">
                             <div class="col-4 my-1">
@@ -42,14 +42,14 @@
                             </div>
                             <div class="col-2 my-1">
 
-                                <button id="btn_fil" class="btn btn-outline-primary btn-sm " type="submit"> <i
+                                <button id="btn_fil" class="btn btn-outline-primary btn-sm " type="btn"> <i
                                         class="fas fa-funnel-dollar fa-lg"></i> filtrar</button>
                             </div>
 
                         </div>
-                    </form>
+                    
                 </div>
-            </div> {% endcomment %}
+            </div>
             <div class="card-body">
 
                 {% comment %} {% if not obj %}
@@ -158,16 +158,14 @@
             "processing": true,
             "ajax": function(data, callback, settings) {
                 var columna_filtro = data.columns[data.order[0].column].data.replace(/\./g,"__");
-                var f_inicio = $('#filtro_inicio').val();
-                var f_final = $('#filtro_final').val();
+                
 
                 $.get('/cajas/ingreso/', {
                     limite: data.length,
                     inicio: data.start,
                     filtro: data.search.value,
-                    order_by: columna_filtro,
-                    f_inicio: f_inicio,
-                    f_final: f_final
+                    order_by: columna_filtro
+                    
                 }, function(res) {
                     //console.log(res);
                     callback({
@@ -237,21 +235,18 @@
 
 
     $("#btn_fil").click(function() {
-       cargar_tabla();
+        var f_inicio = $('#filtro_inicio').val();
+        var f_final = $('#filtro_final').val();
+
+        window.open('/cajas/ingreso/export/' + f_inicio+ '/'+f_final);
+
+        
     });
 
 
 
     
 
-    $("#btnExportar").click(function() {
-        $("#table").table2excel({
-            // exclude CSS class
-            exclude: ".excludeThisClass",
-            name: "Worksheet Name",
-            filename: xls_name, //do not include extension
-            fileext: ".xls" // file extension
-        });
-    });
+  
 </script>
 {% endblock %}
