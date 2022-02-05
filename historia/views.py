@@ -383,7 +383,13 @@ def historia_list(request, id):
         else:
             objeto["item_list"] = "Sin items utilizados"
             objeto["item_state"] = False
-
+        
+        monto = Ingresos.objects.filter(hist=item.id).first()
+        if monto:
+            objeto["monto"] = monto.monto
+        else:
+            objeto["monto"] = "No registrado"
+ 
 
         new_obj.append(objeto)
     if not obj:

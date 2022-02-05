@@ -35,8 +35,8 @@
                     <table class="table table-sm table-bordered table-hover" id="tabla_paciente">
                         <thead>
                             <tr>
+                                <th scope="col">ID</th>
                                 <th scope="col">#</th>
-                                <th scope="col">Id</th>
                                 <th scope="col">Nombres</th>
                                 <th scope="col">Edad</th>
                                 <th scope="col">Tel Movil</th>
@@ -225,7 +225,7 @@
                     "data": "fecha_nacimiento"
                 }, {
                     "data": "celular"
-                }, {
+                }, {                                                                                                                                                              
                     "data": "correo"
                 }, {
                     "data": "genero", "orderable": false
@@ -258,7 +258,7 @@ $(document).on("click", ".btn_add", function() {
 $(document).on("click", ".btn_ver", function() {
 
     fila = $(this).closest("tr");
-    user_id = parseInt(fila.find('td:eq(1)').text()); //capturo el ID		            
+    user_id = parseInt(fila.find('td:eq(0)').text()); //capturo el ID		            
     //console.log("Borrar " + user_id);
     return abrir_modal('/historia/historia/list/' + user_id);
 });
@@ -267,7 +267,7 @@ $(document).on("click", ".btn_ver", function() {
 $(document).on("click", ".btnImprimir", function() {
 
     fila = $(this).closest("tr");
-    user_id = parseInt(fila.find('td:eq(1)').text()); //capturo el ID		            
+    user_id = parseInt(fila.find('td:eq(0)').text()); //capturo el ID		            
     //console.log("Borrar " + user_id);
     info(user_id);
 });
@@ -277,7 +277,7 @@ $(document).on("click", ".btnImprimir", function() {
 $(document).on("click", ".btnEditar", function() {
 
     fila = $(this).closest("tr");
-    user_id = parseInt(fila.find('td:eq(1)').text()); //capturo el ID		            
+    user_id = parseInt(fila.find('td:eq(0)').text()); //capturo el ID		            
     //console.log("Editar " + user_id);
     location.href = '/paciente/paciente/edit/' + user_id;
 });
@@ -287,7 +287,7 @@ $(document).on("click", ".btnEditar", function() {
 $(document).on("click", ".btnBorrar", function() {
 
     fila = $(this).closest("tr");
-    user_id = parseInt(fila.find('td:eq(1)').text()); //capturo el ID		            
+    user_id = parseInt(fila.find('td:eq(0)').text()); //capturo el ID		            
     console.log("Borrar " + user_id);
     return abrir_modal('/paciente/paciente/disabled/' + user_id);
 });

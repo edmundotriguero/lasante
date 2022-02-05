@@ -231,7 +231,7 @@ class PacienteView(LoginRequiredMixin, generic.ListView):
             #for indice,valor in enumerate(self.get_queryset()):
                 objeto = {}
                 objeto['num'] = indice +1
-                objeto['id'] = str(valor.id) + '-lst'
+                objeto['id'] = str(valor.id) 
                 objeto['nombres'] = valor.nombres + ' ' + valor.apellidos
                 objeto['fecha_nacimiento'] = str(valor.edad()) + 'años'
                 

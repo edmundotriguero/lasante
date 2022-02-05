@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 from django.db.models.base import Model
 from django.shortcuts import render, redirect
 
@@ -22,7 +23,7 @@ from .forms import TipopagoForm, IngresoForm, EgresoForm
 
 from paciente.models import Paciente
 from medico.models import Medico
-from inventario.models import Item, Doc_salida,Detalle_Ingreso, Unidad_medida, Doc_ingreso
+from inventario.models import Consumo_inv, Item, Doc_salida,Detalle_Ingreso, Unidad_medida, Doc_ingreso
 
 #  Clases para Tipo tipo de pago 
 class TipopagoView(LoginRequiredMixin, generic.ListView):
@@ -118,8 +119,7 @@ class List_ingreso(LoginRequiredMixin, generic.ListView):
     
 
     def get_queryset(self):
-        f_inicio  = self.request.GET.get('f_inicio')
-        f_final  = self.request.GET.get('f_final')
+        
 
         query = "SELECT ci.id id, ci.fecha fecha, concat(pa.nombres,' ' ,pa.apellidos) pacie, tp.nombre forma_pago, concat(med.nombres, ' ' , med.apellidos) med, cat.nombre cat,  ci.monto mon" 
         query = query + " from cajas_ingresos ci left JOIN historia_historia his on ci.hist = his.id "
@@ -186,7 +186,7 @@ def ingreso_export(request, fecha, fecha1):
     print(fecha)
     
     print(fecha1)
-    query = "SELECT ci.id id, ci.fecha fecha, concat(pa.nombres,' ' ,pa.apellidos) pacie, tp.nombre forma_pago, concat(med.nombres, ' ' , med.apellidos) med, cat.nombre cat,  ci.monto mon" 
+    query = "SELECT ci.id id, ci.fecha fecha, concat(pa.nombres,' ' ,pa.apellidos) pacie, tp.nombre forma_pago, concat(med.nombres, ' ' , med.apellidos) med, cat.nombre cat,  ci.monto mon, his.id his_id" 
     query = query + " from cajas_ingresos ci left JOIN historia_historia his on ci.hist = his.id "
     query = query + "INNER JOIN paciente_paciente pa on pa.id = ci.paciente_id "
     query = query + "INNER JOIN cajas_tipo_pago tp on tp.id = ci.tipo_pago_id "
@@ -208,7 +208,16 @@ def ingreso_export(request, fecha, fecha1):
     cabecera = "{}|{}|{}|{}|{}|{}|{}\n".format('ID','FECHA','PACIENTE','FORMA DE PAGO','MEDICO','CATEGORIA','MONTO')
     lista.append(cabecera)
     for i in ingreso:
-        fila = "{}|{}|{}|{}|{}|{}|{}\n".format(i.id,i.fecha,i.pacie,i.forma_pago,i.med,i.cat,i.mon)
+        insumos = ""
+        if True:
+            doc = Doc_salida.objects.filter(historia_id = i.his_id).first()
+            consumo = Consumo_inv.objects.filter(doc_salida = doc.id).all()
+            for j in consumo:
+                insumos = insumos + "{} {} {},".format(j.item.nombre, j.cantidad_total, j.unidad_medida_t)
+        else:
+            insumos = "Sin registro"
+
+        fila = "{}|{}|{}|{}|{}|{}|{}|{}\n".format(i.id,i.fecha,i.pacie,i.forma_pago,i.med,i.cat,insumos,i.mon)
         lista.append(fila)
     response.streaming_content = lista
 
