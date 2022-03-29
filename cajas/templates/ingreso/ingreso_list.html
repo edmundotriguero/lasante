@@ -194,7 +194,7 @@
                 }, {
                     "data": "mon"
                 }, {
-                    "data": "action"
+                    "data": "action","orderable": false
                 }
 
             ]
@@ -207,7 +207,7 @@
     $(document).on("click", ".btnImprimir", function() {
 
         fila = $(this).closest("tr");
-        user_id = parseInt(fila.find('td:eq(1)').text()); //capturo el ID		            
+        user_id = parseInt(fila.find('td:eq(0)').text()); //capturo el ID		            
         //console.log("Editar " + user_id);
         //location.href = '/cajas/ingreso/print/' + user_id;
         window.open('/cajas/ingreso/print/'+ user_id) ;
@@ -218,7 +218,7 @@
     $(document).on("click", ".btnEditar", function() {
 
         fila = $(this).closest("tr");
-        user_id = parseInt(fila.find('td:eq(1)').text()); //capturo el ID		            
+        user_id = parseInt(fila.find('td:eq(0)').text()); //capturo el ID		            
         //console.log("Editar " + user_id);
         location.href = '/cajas/ingreso/edit/' + user_id;
     });
@@ -228,7 +228,7 @@
     $(document).on("click", ".btnBorrar", function() {
 
         fila = $(this).closest("tr");
-        user_id = parseInt(fila.find('td:eq(1)').text()); //capturo el ID		            
+        user_id = parseInt(fila.find('td:eq(0)').text()); //capturo el ID		            
         console.log("Borrar " + user_id);
         return abrir_modal('/cajas/ingreso/disabled/' + user_id);
     });

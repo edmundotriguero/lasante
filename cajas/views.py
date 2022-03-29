@@ -1,4 +1,4 @@
-from asyncio.windows_events import NULL
+
 from django.db.models.base import Model
 from django.shortcuts import render, redirect
 
@@ -121,6 +121,11 @@ class List_ingreso(LoginRequiredMixin, generic.ListView):
     def get_queryset(self):
         
 
+        # f_inicio = self.request.GET.get('')
+        # f_final = self.request.GET.get('')
+
+        filtro = self.request.GET.get('filtro')
+
         query = "SELECT ci.id id, ci.fecha fecha, concat(pa.nombres,' ' ,pa.apellidos) pacie, tp.nombre forma_pago, concat(med.nombres, ' ' , med.apellidos) med, cat.nombre cat,  ci.monto mon" 
         query = query + " from cajas_ingresos ci left JOIN historia_historia his on ci.hist = his.id "
         query = query + "INNER JOIN paciente_paciente pa on pa.id = ci.paciente_id "
@@ -128,7 +133,11 @@ class List_ingreso(LoginRequiredMixin, generic.ListView):
         query = query + "LEFT JOIN medico_medico med on med.id = his.medico_id "
         query = query + "left join historia_categoria cat on cat.id = his.categoria_id "
         query = query + " where ci.estado = 1 "
-        #query = query + " and ci.fecha BETWEEN str_to_date('" + f_inicio + "','%%Y-%%m-%%d') and  str_to_date('" + f_final + "','%%Y-%%m-%%d')"
+        #query = query + " or med.nombres  like '%%"+ filtro + "%%' "
+        # query = query + " or med.apellidos  like '%%"+ filtro + "%%' "
+        #query = query + " or pa.nombres  like '%%"+ filtro + "%%' "
+        query = query + " and pa.apellidos  like '%%"+ filtro + "%%' "
+        # query = query + " and ci.fecha BETWEEN str_to_date('" + f_inicio + "','%%Y-%%m-%%d') and  str_to_date('" + f_final + "','%%Y-%%m-%%d')"
 #BETWEEN str_to_date('2021-12-01','%Y-%m-%d') and  str_to_date('2021-12-31','%Y-%m-%d')
         query = query + " ORDER by " + self.request.GET.get('order_by') 
         #print(query)
@@ -183,10 +192,11 @@ class List_ingreso(LoginRequiredMixin, generic.ListView):
 
 def ingreso_export(request, fecha, fecha1):
 
-    print(fecha)
+    #print(fecha)
     
-    print(fecha1)
-    query = "SELECT ci.id id, ci.fecha fecha, concat(pa.nombres,' ' ,pa.apellidos) pacie, tp.nombre forma_pago, concat(med.nombres, ' ' , med.apellidos) med, cat.nombre cat,  ci.monto mon, his.id his_id" 
+    #print(fecha1)
+    query = "SELECT ci.id id, ci.fecha fecha, concat(pa.nombres,' ' ,pa.apellidos) pacie, tp.nombre forma_pago, concat(med.nombres, ' ' , med.apellidos) med, cat.nombre cat, " 
+    query = query + "ci.monto mon, his.id his_id, his.sub_categoria cat_sub" 
     query = query + " from cajas_ingresos ci left JOIN historia_historia his on ci.hist = his.id "
     query = query + "INNER JOIN paciente_paciente pa on pa.id = ci.paciente_id "
     query = query + "INNER JOIN cajas_tipo_pago tp on tp.id = ci.tipo_pago_id "
@@ -205,15 +215,22 @@ def ingreso_export(request, fecha, fecha1):
 
     #rows = ("{}|{}\n".format(row.id,row.pacie) for row in ingreso)
     lista = []
-    cabecera = "{}|{}|{}|{}|{}|{}|{}\n".format('ID','FECHA','PACIENTE','FORMA DE PAGO','MEDICO','CATEGORIA','MONTO')
+    cabecera = "{}|{}|{}|{}|{}|{}|{}|{}|{}\n".format('ID','FECHA','PACIENTE','FORMA DE PAGO','MEDICO','CATEGORIA','SUB CATEGORIA','INSUMOS','MONTO')
     lista.append(cabecera)
     for i in ingreso:
         insumos = ""
-        if True:
+        if i.his_id :
+            print(i.his_id)
+            print(type(i.his_id))
+
             doc = Doc_salida.objects.filter(historia_id = i.his_id).first()
-            consumo = Consumo_inv.objects.filter(doc_salida = doc.id).all()
-            for j in consumo:
-                insumos = insumos + "{} {} {},".format(j.item.nombre, j.cantidad_total, j.unidad_medida_t)
+            print(doc)
+            if doc :
+                consumo = Consumo_inv.objects.filter(doc_salida = doc.id).all()
+                for j in consumo:
+                    insumos = insumos + "{} {} {},".format(j.item.nombre, j.cantidad_total, j.unidad_medida_t)
+            else:
+                insumos = "Sin registro"    
         else:
             insumos = "Sin registro"
 
