@@ -547,7 +547,7 @@ def salida_stock_new(request):
                 # print(a1)
                 a2 = idcantidad[i]
                 # print(a2)
-                res = int(a1) + int(a2)
+                res = int(a1) - int(a2)
                 a.cantidad = res
                 a.user_updated = request.user.id
                 a.save()

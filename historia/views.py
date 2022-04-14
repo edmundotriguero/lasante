@@ -306,6 +306,7 @@ def historia_new(request, id):
                             user_created=request.user
                         )
                         inv.save()
+                        
                         a1 = a.cantidad
                         # print("cantidades para restar en stock")
                         # print(a1)
@@ -350,11 +351,11 @@ def historia_list(request, id):
 
                 aux1 = item.sub_categoria[1 : -1]
                 lista_aux = aux1.split(',')
-                print("--------------")
+                # print("--------------")
                 esp = ''
                 for item2 in lista_aux:
                     if item2:
-                        print(item2)
+                        # print(item2)
                         item2 = item2.strip()
                         sub = Sub_categoria.objects.get(pk=item2[1 : -1])
                         esp = esp + str(sub.nombre) + ", "

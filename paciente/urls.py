@@ -3,7 +3,7 @@ from django.urls import path
 from .views import GeneroView, GeneroNew, GeneroEdit, genero_disabled, \
     CiudadView, CiudadNew, CiudadEdit, ciudad_disabled, \
     DocumentoView, DocumentoNew, DocumentoEdit, documento_disabled, \
-    PacienteView, PacienteNew, paciente_info_view, PacienteEdit ,paciente_disabled
+    PacienteView, PacienteNew, paciente_info_view, PacienteEdit ,paciente_disabled, paciente_view_total
 
 urlpatterns = [
     # cidad para genero
@@ -29,7 +29,11 @@ urlpatterns = [
          documento_disabled, name='documento_disabled'),
 
 
-    #rutas para pacientes
+    #rutas para paciente
+
+    path('paciente/viewTotal/<int:id>', paciente_view_total, name='paciente_view_total'),
+
+
     path('paciente/', PacienteView.as_view(), name='paciente_list'),
     path('paciente/new', PacienteNew.as_view(), name='paciente_new'),
     path('paciente/edit/<int:pk>', PacienteEdit.as_view(), name='paciente_edit'),

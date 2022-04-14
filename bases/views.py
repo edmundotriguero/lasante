@@ -1,3 +1,6 @@
+from multiprocessing import context
+from re import template
+from colorama import reinit
 from django.shortcuts import render
 from django.views import generic
 # Create your views here.
@@ -84,3 +87,17 @@ def home(request):
 
 class HomesinPrivilegios(generic.TemplateView):
     template_name="bases/error_400.html"
+
+
+
+@login_required(login_url='/login/')
+def Dashboard(request):
+    template_name="bases/dashboard.html"
+
+   
+
+    paciente = Paciente.objects.filter(estado = True).count()
+
+    contexto = {'obj1':paciente} 
+
+    return render(request,template_name,contexto)

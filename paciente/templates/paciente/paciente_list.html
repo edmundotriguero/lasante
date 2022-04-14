@@ -47,7 +47,7 @@
                                 {% comment %} <th scope="col">Historia</th> {% endcomment %}
                                 <th class="all">Acciones</th>
                             </tr>
-                        </thead>
+                        </thead> 
                         <tbody>
                             {% comment %} {% for item in obj %}
                             <tr>
@@ -288,10 +288,18 @@ $(document).on("click", ".btnBorrar", function() {
 
     fila = $(this).closest("tr");
     user_id = parseInt(fila.find('td:eq(0)').text()); //capturo el ID		            
-    console.log("Borrar " + user_id);
+    //console.log("Borrar " + user_id);
     return abrir_modal('/paciente/paciente/disabled/' + user_id);
 });
 
+//se captura el btn elimina
+$(document).on("click", ".btnVerTotal", function() {
+
+    fila = $(this).closest("tr");
+    user_id = parseInt(fila.find('td:eq(0)').text()); //capturo el ID		            
+   // console.log("Borrar " + user_id);
+   location.href ='/paciente/paciente/viewTotal/' + user_id;
+});
 
 
 

@@ -1,4 +1,6 @@
 
+from re import template
+from sqlite3 import Date
 from django.db.models.base import Model
 from django.shortcuts import render, redirect
 
@@ -24,6 +26,8 @@ from .forms import TipopagoForm, IngresoForm, EgresoForm
 from paciente.models import Paciente
 from medico.models import Medico
 from inventario.models import Consumo_inv, Item, Doc_salida,Detalle_Ingreso, Unidad_medida, Doc_ingreso
+
+from historia.models import Sub_categoria
 
 #  Clases para Tipo tipo de pago 
 class TipopagoView(LoginRequiredMixin, generic.ListView):
@@ -209,9 +213,10 @@ def ingreso_export(request, fecha, fecha1):
     #print(query)
     ingreso = Ingresos.objects.raw(query) 
     
+    hoy = Date.today()
 
     response = StreamingHttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = "attachment;filename=report_ingresos.csv"
+    response['Content-Disposition'] = "attachment;filename=report_ingresos_"+str(hoy)+".csv"
 
     #rows = ("{}|{}\n".format(row.id,row.pacie) for row in ingreso)
     lista = []
@@ -220,11 +225,11 @@ def ingreso_export(request, fecha, fecha1):
     for i in ingreso:
         insumos = ""
         if i.his_id :
-            print(i.his_id)
-            print(type(i.his_id))
+            # print(i.his_id)
+            # print(type(i.his_id))
 
             doc = Doc_salida.objects.filter(historia_id = i.his_id).first()
-            print(doc)
+            # print(doc)
             if doc :
                 consumo = Consumo_inv.objects.filter(doc_salida = doc.id).all()
                 for j in consumo:
@@ -234,7 +239,40 @@ def ingreso_export(request, fecha, fecha1):
         else:
             insumos = "Sin registro"
 
-        fila = "{}|{}|{}|{}|{}|{}|{}|{}\n".format(i.id,i.fecha,i.pacie,i.forma_pago,i.med,i.cat,insumos,i.mon)
+
+        sub_cat = ""
+
+        if i.cat_sub:
+            # print("tiene")
+            # sub = Sub_categoria.objects.get(pk=item.sub_categoria)
+            
+            # objeto["sub_categoria"] = str(sub.nombre)
+            if '[' in  i.cat_sub:
+
+                aux1 = i.cat_sub[1 : -1]
+                lista_aux = aux1.split(',')
+                # print("--------------")
+                esp = ''
+                for item2 in lista_aux:
+                    if item2:
+                        # print(item2)
+                        item2 = item2.strip()
+                        sub = Sub_categoria.objects.get(pk=item2[1 : -1])
+                        esp = esp + str(sub.nombre) + ", "
+
+                    else: 
+                        esp = "No Registrado"   
+                sub_cat = esp[0 : -2]
+            else:
+                sub = Sub_categoria.objects.get(pk=item.sub_categoria)
+            
+                sub_cat = str(sub.nombre)
+        else:
+            # print('no')
+            sub_cat = 'No registrado'
+
+
+        fila = "{}|{}|{}|{}|{}|{}|{}|{}|{}\n".format(i.id,i.fecha,i.pacie,i.forma_pago,i.med,i.cat,sub_cat,insumos,i.mon)
         lista.append(fila)
     response.streaming_content = lista
 
@@ -354,28 +392,126 @@ def ingreso_print(request, id):
 
 # Clases para Egresos
 
-def egreso_view(request):
+# def egreso_view(request):
     
-    template_name = 'egreso/egreso_list.html'
-    contexto = 'obj'
-    obj = Egresos.objects.all()
+#     template_name = 'egreso/egreso_list.html'
+#     contexto = 'obj'
+#     obj = Egresos.objects.all()
 
-    inicio = request.GET.get('inicio')
-    final = request.GET.get('final')
-    print(inicio)
-    print(type(inicio))
-    if inicio:
-        obj = Egresos.objects.filter(fecha__range = (inicio, final))
+#     inicio = request.GET.get('inicio')
+#     final = request.GET.get('final')
+#     print(inicio)
+#     print(type(inicio))
+#     if inicio:
+#         obj = Egresos.objects.filter(fecha__range = (inicio, final))
 
-    if request.method == 'GET':
-        contexto = {'obj': obj}
+#     if request.method == 'GET':
+#         contexto = {'obj': obj}
 
-    # if request.method == 'POST':
+#     # if request.method == 'POST':
         
-    #     # obj = Ingresos.objects
-    #     contexto = {'obj': obj}
+#     #     # obj = Ingresos.objects
+#     #     contexto = {'obj': obj}
 
-    return render(request, template_name, contexto)
+#     return render(request, template_name, contexto)
+
+
+
+
+class List_egreso(LoginRequiredMixin, generic.ListView):
+    model = Egresos
+    template_name = 'egreso/egreso_list.html'
+    login_url = 'bases:login'
+
+
+    def get_queryset(self):
+
+
+        filtro = self.request.GET.get('filtro')
+
+
+        
+
+        #return self.model.objects.raw(query)
+        return self.model.objects.filter(estado=1)
+
+     
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            html_action = "<button class='btn btn-sm btn-outline-info btn-circle btnImprimir' ><i class='fas fa-print fa-lg'></i></button> "
+            html_action = html_action + "<button class='btn btn-sm btn-outline-warning btn-circle btnEditar' ><i class='far fa-edit fa-lg'></i></button>"
+            html_action = html_action + "<button class='btn btn-sm btn-outline-danger btn-circle btnBorrar' ><i class='fas fa-ban fa-lg'></i></button>"
+            inicio = int(request.GET.get('inicio'))
+            fin = int(request.GET.get('limite'))
+
+            list_data=[]
+
+            for indice, valor in enumerate(self.get_queryset()[inicio:inicio+fin],inicio):
+                
+                objeto = {}
+                objeto['num'] = indice+1
+                objeto['id'] = valor.id
+                objeto['fecha'] = str(valor.fecha)
+                objeto['num_factura'] = valor.num_factura
+                objeto['tipo_pago'] = valor.tipo_pago.nombre
+                objeto['detalle'] = valor.detalle
+                objeto['monto'] = valor.monto
+                objeto['action'] = html_action
+
+
+
+                list_data.append(objeto)
+
+            data = {
+                'length': len(list(self.get_queryset())),
+                'objects':list_data
+            }    
+
+            return HttpResponse(json.dumps(data),'aplication/json')
+        else:
+            template_name = 'egreso/egreso_list.html'
+            return render(request, template_name)
+
+
+
+def egreso_export(request, fecha, fecha1):
+
+    #print(fecha)
+    
+    #print(fecha1)
+#     query = "SELECT ci.id id, ci.fecha fecha, concat(pa.nombres,' ' ,pa.apellidos) pacie, tp.nombre forma_pago, concat(med.nombres, ' ' , med.apellidos) med, cat.nombre cat, " 
+#     query = query + "ci.monto mon, his.id his_id, his.sub_categoria cat_sub" 
+#     query = query + " from cajas_ingresos ci left JOIN historia_historia his on ci.hist = his.id "
+#     query = query + "INNER JOIN paciente_paciente pa on pa.id = ci.paciente_id "
+#     query = query + "INNER JOIN cajas_tipo_pago tp on tp.id = ci.tipo_pago_id "
+#     query = query + "LEFT JOIN medico_medico med on med.id = his.medico_id "
+#     query = query + "left join historia_categoria cat on cat.id = his.categoria_id "
+#     query = query + " where ci.estado = 1 "
+#     query = query + " and ci.fecha BETWEEN str_to_date('" + fecha + "','%%Y-%%m-%%d') and  str_to_date('" + fecha1 + "','%%Y-%%m-%%d')"
+# #BETWEEN str_to_date('2021-12-01','%Y-%m-%d') and  str_to_date('2021-12-31','%Y-%m-%d')
+#     query = query + " ORDER by id" 
+    #print(query)
+    egreso = Egresos.objects.filter(estado=1)
+    
+
+    response = StreamingHttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = "attachment;filename=report_egresos.csv"
+
+    #rows = ("{}|{}\n".format(row.id,row.pacie) for row in ingreso)
+    lista = []
+    cabecera = "{}|{}|{}|{}|{}|{}\n".format('ID','FECHA','NUM DOC','FORMA DE PAGO','DETALLE','MONTO')
+    lista.append(cabecera)
+    for i in egreso:
+        
+
+        fila = "{}|{}|{}|{}|{}|{}\n".format(i.id,str(i.fecha),i.num_factura,i.tipo_pago.nombre,i.detalle,i.monto)
+        lista.append(fila)
+    response.streaming_content = lista
+
+    #print(type(rows))
+   # print(type(rows))
+   # response = HttpResponse('success')
+    return response
 
 
 
@@ -469,8 +605,8 @@ def egreso_new(request):
             egre = form.save(commit=False)
             egre.user_created = request.user
             egre.save()
-            print(egre.id)  
-            print("id de formulario de salida ") 
+            # print(egre.id)  
+            # print("id de formulario de salida ") 
 
 
         iditem = request.POST.getlist('iditem[]')

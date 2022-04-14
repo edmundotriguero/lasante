@@ -14,12 +14,16 @@ from django.contrib.auth.decorators import login_required, permission_required
 import json
 from datetime import datetime, timedelta
 
+import paciente
+
 from .models import Genero, Ciudad, Tipo_documento, Paciente
 from .forms import GeneroForm, CiudadForm, DocumentoForm, PacienteForm
 
 from historia.models import Historia, Categoria, Sub_categoria
 
 from django.db.models import Q, F
+
+from cajas.models import Ingresos
 
 #  Clases para Genero
 class GeneroView(LoginRequiredMixin, generic.ListView):
@@ -222,6 +226,7 @@ class PacienteView(LoginRequiredMixin, generic.ListView):
 
             html_action1 = "<button class='btn btn-sm btn-outline-success btn-circle btnImprimir' ><i class='fas fa-info'></i></button>"
             html_action1 = html_action1 +  "<button class='btn btn-sm btn-outline-warning btn-circle btnEditar' ><i class='far fa-edit'></i></button>"
+            html_action1 = html_action1 + "<button class='btn btn-sm btn-outline-info btn-circle btnVerTotal ' ><i class='fa fa-list-alt' ></i></button>"
             html_action1 = html_action1 + "<button class='btn btn-sm btn-outline-danger btn-circle btnBorrar ' ><i class='fas fa-users-slash'></i></button>"
             inicio = int(request.GET.get('inicio'))
             fin = int(request.GET.get('limite'))
@@ -381,5 +386,27 @@ def paciente_disabled(request, id):
 
         contexto = {'obj': 'OK'}
         return HttpResponse('Registro inactivo')
+
+    return render(request, template_name, contexto)
+
+
+
+
+def paciente_view_total(request, id):
+    template_name = 'paciente/paciente_view_total.html'
+    contexto = {}
+
+    if request.method == 'GET':
+        # print('===========================')
+        # print(id)
+        obj = Paciente.objects.get(pk = id)
+        ingresos = Ingresos.objects.filter(paciente_id=id).all()
+        total = 0
+        if ingresos:
+            for i in ingresos: 
+                total = total + int( i.monto)
+
+        # print(ingresos)
+        contexto = {'obj':ingresos, 'paciente':obj, 'total':total}
 
     return render(request, template_name, contexto)

@@ -1,0 +1,103 @@
+{% extends 'bases/base.html' %}
+
+{% block page_content %}
+
+<section class="content">
+
+
+    <div class="container-fluid ">
+
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                    <div class="card-header">
+                        {% if not obj %}
+                        <h3 class="card-title">No se encontraron registros para este paciente</h3>
+                        {% else %}
+                    <h3 class="card-title">Lista de Ingresos del paciente: {{paciente.nombres}} {{paciente.apellidos}}</h3>
+                        {% comment %} {% endif %} {% endcomment %}
+                    </div>
+                   
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <div class="table-responsive">
+
+                        <table class="table table-sm table-bordered table-hover" id="tabla_paciente">
+                            <thead>
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    
+                                    <th scope="col">Detalle</th>
+                                    <th scope="col">Fecha</th>
+                                    <th scope="col">Tipo pago</th>
+                                    <th scope="col">Monto</th>
+                                </tr>
+                            </thead> 
+                            <tbody>
+                                {% for item in obj %}
+                                <tr>
+                                    <td>{{ item.id }}</th>
+                                    
+                                    <td>{{ item.detalle }}</td>
+                                    <td>{{ item.fecha }}</td>
+                                    <td>{{ item.tipo_pago.nombre }}</td>
+                                    <td class="text-right">
+                                        {{ item.monto}}
+                                    </td>
+    
+                                 
+                                </tr>
+                                {% endfor %}
+    
+                            </tbody>
+                            <tfooter>
+                            <tr>
+                                <td colspan="4"  class="text-right">
+                                    TOTAL
+                                </td>
+                                <td class="text-right" >
+                                    {{total}}
+                                </td>
+                            </tr>
+                            </tfooter>
+                        </table>
+                    </div>
+    
+                    {% endif %}
+                   
+                    
+
+                        <div class="card-footer text-center">
+                            <button type="button" class="btn btn-danger" onclick="goBack()">Volver</button>
+                            {% comment %} <button type="submit" class="btn btn-success">Guardar</button> {% endcomment %}
+                        </div>
+                    </form>
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block js_page %}
+<script>
+    $(document).ready(function(){
+    $("input#id_fecha_nacimiento").focus(function(){
+        $(this).get(0).type = 'date';
+        $(this).val("{{obj.fecha_nacimiento|date:'yy-m-d'}}");
+        // alert()
+    });
+
+    
+});
+
+    function goBack(){
+        window.history.back()
+    }
+</script>
+{% endblock %}
