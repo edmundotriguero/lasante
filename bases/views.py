@@ -1,6 +1,6 @@
 from multiprocessing import context
 from re import template
-from colorama import reinit
+# from colorama import reinit
 from django.shortcuts import render
 from django.views import generic
 # Create your views here.
