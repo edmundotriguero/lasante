@@ -29,5 +29,5 @@ urlpatterns = [
     path('cajas/',include(('cajas.urls','cajas'), namespace='cajas')),
     path('admin/', admin.site.urls),
 
-    
+
 ]
